@@ -13,9 +13,12 @@ type ServiceMessage struct {
 func NewServiceMessage(Repo repository.Message) *ServiceMessage {
 	return &ServiceMessage{RepoM: Repo}
 }
-func (S *ServiceMessage) Save(msg model.Message) error {
+func (S *ServiceMessage) Save(msg model.Message, IdUser int) error {
 	if msg.Content == "" {
 		return errors.New("Void Field")
 	}
-	return S.RepoM.Save(msg)
+	return S.RepoM.Save(msg, IdUser)
+}
+func (S *ServiceMessage) CheckMessages(IdUser int) ([]model.Message, error) {
+	return S.RepoM.CheckMessages(IdUser)
 }
