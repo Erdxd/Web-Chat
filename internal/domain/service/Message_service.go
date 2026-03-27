@@ -15,7 +15,7 @@ func NewServiceMessage(Repo repository.Message) *ServiceMessage {
 }
 func (S *ServiceMessage) Save(msg model.Message, IdUser int) error {
 	if msg.Content == "" {
-		return errors.New("Void Field")
+		return errors.New("Empty field")
 	}
 	return S.RepoM.Save(msg, IdUser)
 }
