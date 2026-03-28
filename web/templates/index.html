@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест моей Трубы</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; padding: 10px; }
+        #chat { height: 300px; border: 1px solid #ccc; overflow-y: scroll; padding: 10px; margin-bottom: 10px; background: #f9f9f9; }
+        .msg { margin-bottom: 8px; padding: 5px; border-radius: 4px; background: #e3f2fd; }
+        input { width: 80%; padding: 8px; }
+        button { padding: 8px; cursor: pointer; }
+        #status { font-size: 0.8em; color: gray; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <h2>Чат "Стальная Труба" 🚀</h2>
+    <div id="status">Подключение...</div>
+    
+    <div id="chat"></div>
+
+    <input type="text" id="messageInput" placeholder="Напиши что-нибудь..." onkeydown="if(event.keyCode==13) sendMessage()">
+    <button onclick="sendMessage()">Отправить</button>
+
+    <script>
+        const chat = document.getElementById('chat');
+        const input = document.getElementById('messageInput');
+        const status = document.getElementById('status');
+
+        // Открываем трубу
+        const socket = new WebSocket("ws://localhost:8080/ws");
+
+        socket.onopen = () => {
+            status.innerText = "✅ Труба проложена (Online)";
+            status.style.color = "green";
+        };
+
+        socket.onmessage = (event) => {
+            // Создаем плашку сообщения
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'msg';
+            msgDiv.innerText = "📩 Пришло: " + event.data;
+            chat.appendChild(msgDiv);
+            
+            // Скроллим вниз
+            chat.scrollTop = chat.scrollHeight;
+        };
+
+        socket.onclose = () => {
+            status.innerText = "❌ Труба лопнула (Offline)";
+            status.style.color = "red";
+        };
+
+        socket.onerror = (err) => {
+            console.error("Ошибка сокета:", err);
+        };
+
+        function sendMessage() {
+            const text = input.value;
+            if (text && socket.readyState === WebSocket.OPEN) {
+                // Шлем в трубу сырой текст (как у тебя сейчас в Go настроено)
+                socket.send(text);
+                input.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
