@@ -3,43 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
+    <title>register</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            height: 100vh;
-            display: flex;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            justify-content: center;
+            display: flex;
             align-items: center;
+            justify-content: center;
         }
 
         .card {
             background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
             padding: 40px;
             border-radius: 20px;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .title {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            color: #ffffff;
-            letter-spacing: 1px;
+        .card label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         .field {
@@ -49,13 +47,13 @@
         .field input {
             width: 100%;
             padding: 14px 18px;
-            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            outline: none;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             color: #fff;
             font-size: 16px;
             transition: all 0.3s;
-            outline: none;
         }
 
         .field input:focus {
@@ -68,13 +66,18 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
+        .spacer {
+            height: 10px;
+        }
+
         .sumbit-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #6c5ce7, #a55eff);
             border: none;
+            outline: none;
+            background: #6c5ce7;
             border-radius: 12px;
-            color: white;
+            color: #fff;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
@@ -83,8 +86,8 @@
         }
 
         .sumbit-btn:hover {
+            background: #5d4299;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
         }
 
         p {
@@ -107,21 +110,33 @@
     </style>
 </head>
 <body>
-    <form action="/login" method="post" class="card">
-        <div class="title">Вход</div>
-
-        <label for="Логин или Email"></label>
+    <form action="/register" method="post" class="card">
+        <label for="username">Имя пользователя</label>
         <div class="field">
-            <input type="text" name="login" placeholder="Введите логин">
+            <input type="text" name="username" id="username" placeholder="Введите имя">
         </div>
 
-        <label for="password"></label>
+        <label for="email">Электронная почта</label>
         <div class="field">
-            <input type="password" name="password" placeholder="Введите пароль">
+            <input type="text" name="email" id="email" placeholder="example@mail.com">
         </div>
 
-        <button type="submit" class="sumbit-btn">Войти</button>
-        <p>Нет аккаунта? <a href="register.html">Зарегистрируйтесь.</a></p>
+        <label for="password">Примудайте пароль</label>
+        <div class="field">
+            <input type="text" name="password" id="password" placeholder="Введите пароль">
+        </div>
+
+        <label for="password_repeat">Повторите пароль</label>
+        <div class="field">
+            <input type="text" name="password_repeat" id="password_repeat" placeholder="Повтор пароль">
+        </div>
+
+        <div class="spacer"></div>
+
+        <button type="sumbit" class="sumbit-btn">
+            Зарегистрироваться 
+        </button>
+        <p>Уже есть аккаунт? <a href="login.html">Войдите</a></p>
     </form>
 </body>
 </html>
