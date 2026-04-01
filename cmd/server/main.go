@@ -3,7 +3,7 @@ package main
 import (
 	"Web-Chat/internal/domain/service"
 	http1 "Web-Chat/internal/http/ws"
-	"Web-Chat/internal/infrastructure"
+	infrastructure "Web-Chat/internal/infrastructure/database"
 	"Web-Chat/internal/repositories"
 	"log"
 	"net/http"
@@ -23,7 +23,7 @@ func main() {
 		log.Println(err)
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/templates/index.html") // Путь к твоему HTML файлу
+		http.ServeFile(w, r, "web/templates/index.html")
 	})
 	hub := http1.NewHub()
 	go hub.Run()

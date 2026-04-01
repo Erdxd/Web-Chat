@@ -14,5 +14,5 @@ type User struct {
 	Name      string    `db:"name"`
 	Password  string    `db:"password"`
 	Email     string    `db:"email"`
-	CreatedAt time.Time `db:"CA"`
+	CreatedAt time.Time `db:"ca"`
 }
