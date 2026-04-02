@@ -29,7 +29,7 @@ func (U *UserRepo) CreateAcc(Data model.User) error {
 	}
 	return nil
 }
-func (U *UserRepo) Login(Email, PasswordFormUser string) (string, error) {
+func (U *UserRepo) Login(Email string) (string, error) {
 	var Password string
 	SqlStatement := (`SELECT password FROM users WHERE email=$1`)
 	err := U.db.QueryRow(SqlStatement, Email).Scan(&Password)
