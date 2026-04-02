@@ -35,5 +35,11 @@ func (Au *Auth) CreateAcc(w http.ResponseWriter, r *http.Request) {
 
 }
 func (Au *Auth) Login(w http.ResponseWriter, r *http.Request) {
+	Email := r.FormValue("email")
+	PasswordFromUser := r.FormValue("password")
+	err := Au.AuthS.Login(Email, PasswordFromUser)
+	if err != nil {
+		return
+	}
 
 }
