@@ -32,11 +32,14 @@ func (US *UserService) CreateAcc(Data model.User, repeatpassword string) error {
 func (US *UserService) Login(Email string, PasswordFromUser string) error {
 	HashedPassword, err := US.User.Login(Email)
 	if err != nil {
-		return nil
+		return err
 	}
+	log.Println(PasswordFromUser)
+	log.Println(len(HashedPassword))
 	Compare, err := US.Hash.Compare([]byte(HashedPassword), PasswordFromUser)
+	log.Println(Compare)
 	if err != nil {
-		return nil
+		return err
 	}
 	if !Compare {
 		return errors.New("Wrong Password or Email")

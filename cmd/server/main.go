@@ -43,7 +43,7 @@ func main() {
 	go hub.Run()
 	MessageRepo := repositories.NewRepo(db)
 	serviceM := service.NewServiceMessage(MessageRepo)
-	handlerMain := http1.NewChatHandler(serviceM, hub)
+	handlerMain := http1.NewChatHandler(serviceM, hub, tmpl)
 	UserRepo := repositories.NewUserRepo(db)
 	Hasher := hasher.NewHasher()
 	ServiceU := service.NewUserService(UserRepo, Hasher)
