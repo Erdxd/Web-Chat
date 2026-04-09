@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
+    <title>Вход</title>
     <style>
         * {
             box-sizing: border-box;
@@ -17,7 +16,6 @@
             display: flex;
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
             justify-content: center;
             align-items: center;
         }
@@ -44,11 +42,12 @@
 
         .field {
             margin-bottom: 20px;
+            position: relative; /* Важно для позиционирования кнопки внутри */
         }
 
         .field input {
             width: 100%;
-            padding: 14px 18px;
+            padding: 14px 45px 14px 18px; /* Место справа для кнопки */
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
@@ -68,7 +67,7 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
-        .sumbit-btn {
+        .submit-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(135deg, #6c5ce7, #a55eff);
@@ -82,7 +81,7 @@
             margin-top: 10px;
         }
 
-        .sumbit-btn:hover {
+        .submit-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
         }
@@ -104,6 +103,24 @@
             color: #6c5ce7;
             text-decoration: underline;
         }
+
+        /* Кнопка показа пароля внутри поля */
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: #6c5ce7;
+        }
     </style>
 </head>
 <body>
@@ -115,13 +132,29 @@
             <input type="text" name="email" placeholder="Введите логин">
         </div>
 
-        <label for="password"></label>
         <div class="field">
-            <input type="password" name="password" placeholder="Введите пароль">
+            <input type="password" name="password" id="password" placeholder="Введите пароль">
+            <button type="button" class="toggle-password" data-target="password">🙉</button>
         </div>
 
         <button type="submit" class="sumbit-btn">Войти</button>
         <p>Нет аккаунта? <a href="/auth/register">Зарегистрируйтесь.</a></p>
     </form>
+
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    this.textContent = '🙉';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

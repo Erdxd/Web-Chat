@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>register</title>
+    <title>Регистрация</title>
     <style>
         * {
             margin: 0;
@@ -42,11 +42,12 @@
 
         .field {
             margin-bottom: 20px;
+            position: relative; /* Важно! Чтобы кнопка была внутри поля */
         }
 
         .field input {
             width: 100%;
-            padding: 14px 18px;
+            padding: 14px 45px 14px 18px; /* Место для кнопки справа */
             border: 1px solid rgba(255, 255, 255, 0.2);
             outline: none;
             background: rgba(255, 255, 255, 0.08);
@@ -66,11 +67,28 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: #6c5ce7;
+        }
+
         .spacer {
             height: 10px;
         }
 
-        .sumbit-btn {
+        .submit-btn {
             width: 100%;
             padding: 14px;
             border: none;
@@ -85,7 +103,7 @@
             margin-top: 10px;
         }
 
-        .sumbit-btn:hover {
+        .submit-btn:hover {
             background: #5d4299;
             transform: translateY(-2px);
         }
@@ -118,17 +136,19 @@
 
         <label for="email">Электронная почта</label>
         <div class="field">
-            <input type="text" name="email" id="email" placeholder="example@mail.com">
+            <input type="email" name="email" id="email" placeholder="example@mail.com">
         </div>
 
-        <label for="password">Примудайте пароль</label>
+        <label for="password">Придумайте пароль</label>
         <div class="field">
-            <input type="text" name="password" id="password" placeholder="Введите пароль">
+            <input type="password" name="password" id="password" placeholder="Введите пароль">
+            <button type="button" class="toggle-password" data-target="password">🙉</button>
         </div>
 
         <label for="password_repeat">Повторите пароль</label>
         <div class="field">
-            <input type="text" name="password_repeat" id="password_repeat" placeholder="Повтор пароль">
+            <input type="password" name="password_repeat" id="password_repeat" placeholder="Повтор пароля">
+            <button type="button" class="toggle-password" data-target="password_repeat">🙉</button>
         </div>
 
         <div class="spacer"></div>
@@ -138,5 +158,21 @@
         </button>
         <p>Уже есть аккаунт? <a href="/auth/login">Войдите</a></p>
     </form>
+
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.textContent = '🙈';
+                } else {
+                    input.type = 'password';
+                    this.textContent = '🙉';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
