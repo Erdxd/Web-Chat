@@ -22,6 +22,3 @@ func (S *ServiceMessage) Save(msg model.Message, IdUser int) error {
 
 	return S.RepoM.Save(msg, IdUser)
 }
-func (S *ServiceMessage) CheckMessages(IdUser int) ([]model.Message, error) {
-	return S.RepoM.CheckMessages(IdUser)
-}

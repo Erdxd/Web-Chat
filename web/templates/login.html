@@ -107,12 +107,12 @@
     </style>
 </head>
 <body>
-    <form action="/login" method="post" class="card">
+    <form action="/auth/login" method="post" class="card">
         <div class="title">Вход</div>
 
-        <label for="Логин или Email"></label>
+        <label for="Email"></label>
         <div class="field">
-            <input type="text" name="login" placeholder="Введите логин">
+            <input type="text" name="email" placeholder="Введите логин">
         </div>
 
         <label for="password"></label>
@@ -121,7 +121,7 @@
         </div>
 
         <button type="submit" class="sumbit-btn">Войти</button>
-        <p>Нет аккаунта? <a href="register.html">Зарегистрируйтесь.</a></p>
+        <p>Нет аккаунта? <a href="/auth/register">Зарегистрируйтесь.</a></p>
     </form>
 </body>
 </html>
