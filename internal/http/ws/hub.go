@@ -6,6 +6,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+type Message struct {
+	Data   []byte
+	RoomId int
+}
 type Client struct {
 	Conn   *websocket.Conn
 	Send   chan []byte
@@ -14,41 +18,61 @@ type Client struct {
 type Hub struct {
 	RoomId     map[int]map[*Client]bool
 	Clients    map[*Client]bool
-	Broadcast  chan []byte
+	Broadcast  chan Message
 	Register   chan *Client
 	Unregister chan *Client
 	Mu         sync.Mutex
 }
 
 func NewHub() *Hub {
-	return &Hub{RoomId: make(map[int]map[*Client]bool), Clients: make(map[*Client]bool), Broadcast: make(chan []byte), Register: make(chan *Client), Unregister: make(chan *Client)}
+	return &Hub{RoomId: make(map[int]map[*Client]bool), Clients: make(map[*Client]bool), Broadcast: make(chan Message), Register: make(chan *Client), Unregister: make(chan *Client)}
 }
 func (h *Hub) Run() {
 	for {
 		select {
 		case client := <-h.Register:
 			h.Mu.Lock()
-			h.Clients[client] = true
+
+			if _, ok := h.RoomId[client.RoomId]; ok {
+
+			} else {
+				h.RoomId[client.RoomId] = make(map[*Client]bool)
+
+			}
+			h.RoomId[client.RoomId][client] = true
+
 			h.Mu.Unlock()
 		case client := <-h.Unregister:
 			h.Mu.Lock()
-			if _, ok := h.Clients[client]; ok {
-				delete(h.Clients, client)
+			if _, ok := h.RoomId[client.RoomId]; ok {
+				delete(h.RoomId[client.RoomId], client)
+				if len(h.RoomId[client.RoomId]) == 0 {
+
+					delete(h.RoomId, client.RoomId)
+				}
 				close(client.Send)
 			}
 			h.Mu.Unlock()
 		case message := <-h.Broadcast:
 			h.Mu.Lock()
-			for client := range h.Clients {
-				select {
-				case client.Send <- message:
-				default:
-					close(client.Send)
-					delete(h.Clients, client)
+			if roomclients, ok := h.RoomId[message.RoomId]; ok {
+
+				for Client := range roomclients {
+					select {
+					case Client.Send <- message.Data:
+					default:
+						close(Client.Send)
+						delete(roomclients, Client)
+
+					}
 
 				}
 
 			}
+			if len(h.RoomId[message.RoomId]) == 0 {
+				delete(h.RoomId, message.RoomId)
+			}
+
 			h.Mu.Unlock()
 		}
 	}
