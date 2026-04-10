@@ -3,6 +3,7 @@ package handlers
 import (
 	"Web-Chat/internal/domain/model"
 	"Web-Chat/internal/domain/service"
+	"Web-Chat/internal/http/middleware"
 	"log"
 	"net/http"
 	"text/template"
@@ -12,6 +13,8 @@ import (
 type Auth struct {
 	AuthS     service.UserService
 	templates *template.Template
+	Jwt       service.Jwt
+	Authjwt   middleware.JwtM
 }
 
 func NewAuth(AuthS service.UserService, tmpl *template.Template) *Auth {
@@ -54,7 +57,25 @@ func (Au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Something is wrong", 400)
 			return
 		}
+		Userid, admin, err := Au.AuthS.User.GetUserDataForJWT(Email)
+		if err != nil {
+			http.Error(w, "Cant Auth you", 401)
+			return
+		}
+		token, err := Au.Jwt.CreateToken(Userid, admin)
+		if token == "" {
+			http.Error(w, "Unauthorized", 401)
+		}
+
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.SetCookie(w, &http.Cookie{
+			Name:     "token",
+			Value:    token,
+			Path:     "/",
+			MaxAge:   86400,
+			HttpOnly: true,
+			Secure:   false,
+		})
 	}
 	Au.templates.ExecuteTemplate(w, "login.html", nil)
 

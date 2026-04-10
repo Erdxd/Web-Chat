@@ -15,10 +15,11 @@ type JwtToken struct {
 func NewJwtToken() *JwtToken {
 	return &JwtToken{}
 }
-func (J *JwtToken) GenerateToken(UserId int) (string, error) {
+func (J *JwtToken) GenerateToken(UserId int, admin bool) (string, error) {
 	ActionTime := time.Now().Add(24 * time.Hour)
 	Claims := model.Claims{
 		User_id: UserId,
+		Admin:   admin,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(ActionTime),
 		},
