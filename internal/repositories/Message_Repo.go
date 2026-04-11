@@ -32,9 +32,10 @@ func (R RepoMessage) Save(msg model.Message, IdUser int) error {
 
 	return nil
 }
-func (R RepoMessage) CheckMessages(IdUser int) ([]model.Message, error) {
+func (R RepoMessage) CheckMessages(RoomId int) ([]model.Message, error) {
+	log.Println(RoomId)
 	var messages []model.Message
-	rows, err := R.db.Query(`SELECT * FROM messages WHERE useridmessage=$1 `, IdUser)
+	rows, err := R.db.Query(`SELECT * FROM messages WHERE roomidmessage=$1 `, RoomId)
 	if err != nil {
 		return nil, err
 	}
@@ -55,5 +56,6 @@ func (R RepoMessage) CheckMessages(IdUser int) ([]model.Message, error) {
 			Content:   messageDB.Content,
 		})
 	}
+	log.Println(messages)
 	return messages, err
 }

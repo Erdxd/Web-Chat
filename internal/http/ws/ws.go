@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"text/template"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -21,12 +22,13 @@ var upgrader = websocket.Upgrader{
 }
 
 type ChatHandler struct {
-	service service.ServiceMessage
-	Hub     *Hub
+	service   service.ServiceMessage
+	Hub       *Hub
+	templates *template.Template
 }
 
-func NewChatHandler(s *service.ServiceMessage, h *Hub) *ChatHandler {
-	return &ChatHandler{service: *s, Hub: h}
+func NewChatHandler(s *service.ServiceMessage, h *Hub, templates *template.Template) *ChatHandler {
+	return &ChatHandler{service: *s, Hub: h, templates: templates}
 }
 func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 	roomId := r.URL.Query().Get("room")
@@ -51,7 +53,21 @@ func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 		C.Hub.Unregister <- client
 		conn.Close()
 
+		if err != nil {
+			log.Println(err)
+			http.Error(w, "1", 400)
+		}
 	}()
+	message, err := C.service.CheckMessage(roomIdInt)
+	if err != nil {
+		log.Println(err)
+		return
+	} else {
+		for _, msg := range message {
+
+			client.Send <- []byte(msg.Content)
+		}
+	}
 	for {
 
 		_, payload, err := conn.ReadMessage()
@@ -76,4 +92,5 @@ func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 		C.Hub.Broadcast <- BroadCast
 
 	}
+
 }
