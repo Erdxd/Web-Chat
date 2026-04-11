@@ -22,3 +22,7 @@ func (S *ServiceMessage) Save(msg model.Message, IdUser int) error {
 
 	return S.RepoM.Save(msg, IdUser)
 }
+func (S *ServiceMessage) CheckMessage(RoomId int) ([]model.Message, error) {
+	log.Println(RoomId)
+	return S.RepoM.CheckMessages(RoomId)
+}

@@ -5,6 +5,7 @@ import (
 	"Web-Chat/internal/domain/repository"
 	"Web-Chat/internal/repositories/entities"
 	"database/sql"
+	"log"
 )
 
 type UserRepo struct {
@@ -33,8 +34,10 @@ func (U *UserRepo) Login(Email string) (string, error) {
 	var Password string
 	SqlStatement := (`SELECT password FROM users WHERE email=$1`)
 	err := U.db.QueryRow(SqlStatement, Email).Scan(&Password)
+	log.Println(12783457812576812)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
+
 	return Password, err
 }

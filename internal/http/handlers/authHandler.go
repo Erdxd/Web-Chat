@@ -48,6 +48,7 @@ func (Au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		Email := r.FormValue("email")
 		PasswordFromUser := r.FormValue("password")
 		err := Au.AuthS.Login(Email, PasswordFromUser)
+
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "Something is wrong", 400)
