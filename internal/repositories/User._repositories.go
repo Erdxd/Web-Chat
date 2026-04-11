@@ -34,7 +34,7 @@ func (U *UserRepo) Login(Email string) (string, error) {
 	var Password string
 	SqlStatement := (`SELECT password FROM users WHERE email=$1`)
 	err := U.db.QueryRow(SqlStatement, Email).Scan(&Password)
-	log.Println(12783457812576812)
+	log.Println(Password)
 	if err != nil {
 		return "", err
 	}

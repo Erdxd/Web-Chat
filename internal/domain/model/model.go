@@ -22,6 +22,6 @@ type User struct {
 }
 type Claims struct {
 	User_id int
-	Admin   bool
+
 	jwt.RegisteredClaims
 }
