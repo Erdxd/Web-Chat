@@ -105,26 +105,26 @@ body {
 <div class="container">
 
     <div class="sidebar">
-        <div class="room" onclick="selectRoom(1)">
+        <div class="room" onclick="selectRoom('user1')">
             <div class="avatar"></div>
-            <span>Комната 1</span>
+            <span>User1</span>
         </div>
 
-        <div class="room" onclick="selectRoom(2)">
+        <div class="room" onclick="selectRoom('user2')">
             <div class="avatar"></div>
-            <span>Комната 2</span>
+            <span>User2</span>
         </div>
 
-        <div class="room" onclick="selectRoom(3)">
+        <div class="room" onclick="selectRoom('user3')">
             <div class="avatar"></div>
-            <span>Комната 3</span>
+            <span>User3</span>
         </div>
     </div>
 
     <div class="chat-area">
 
         <div class="header">
-            Чат: <span id="currentRoom">1</span>
+            Чат: <span id="currentRoom">user1</span>
         </div>
 
         <div id="chat"></div>
@@ -145,59 +145,49 @@ const chat = document.getElementById('chat');
 const input = document.getElementById('messageInput');
 const currentRoomSpan = document.getElementById('currentRoom');
 
-let currentRoom = 1;
+let currentRoom = "user1";
 const userId = Math.random().toString(36).substring(7);
-let socket;
 
-function connectToRoom(room) {
-    if (socket) {
-        socket.close();
+const socket = new WebSocket("ws://localhost:8080/ws");
+
+socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    if (data.room !== currentRoom) return;
+
+    const msgDiv = document.createElement('div');
+
+    if (data.user === userId) {
+        msgDiv.className = 'msg me';
+    } else {
+        msgDiv.className = 'msg other';
     }
-    
-    socket = new WebSocket(`ws://localhost:8080/ws?room=${room}`);
-    
-    socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        
-        const msgDiv = document.createElement('div');
-        
-        if (data.user === userId) {
-            msgDiv.className = 'msg me';
-        } else {
-            msgDiv.className = 'msg other';
-        }
-        
-        msgDiv.innerText = data.text;
-        chat.appendChild(msgDiv);
-        chat.scrollTop = chat.scrollHeight;
-    };
-    
-    socket.onerror = (err) => console.error('WebSocket error:', err);
-    socket.onclose = () => console.log('WebSocket closed');
-}
+
+    msgDiv.innerText = data.text;
+
+    chat.appendChild(msgDiv);
+    chat.scrollTop = chat.scrollHeight;
+};
 
 function selectRoom(room) {
     currentRoom = room;
     currentRoomSpan.innerText = room;
     chat.innerHTML = "";
-    connectToRoom(room);
 }
 
 function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
-    
+
     const msg = {
         user: userId,
-        text: text
+        text: text,
+        room: currentRoom
     };
-    
+
     socket.send(JSON.stringify(msg));
     input.value = '';
 }
-
-// Подключаемся к комнате 1 при загрузке
-connectToRoom(1);
 </script>
 
 </body>

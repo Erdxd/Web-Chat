@@ -42,12 +42,12 @@
 
         .field {
             margin-bottom: 20px;
-            position: relative; /* Важно для позиционирования кнопки внутри */
+            position: relative;
         }
 
         .field input {
             width: 100%;
-            padding: 14px 45px 14px 18px; /* Место справа для кнопки */
+            padding: 14px 45px 14px 18px;
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
@@ -104,7 +104,6 @@
             text-decoration: underline;
         }
 
-        /* Кнопка показа пароля внутри поля */
         .toggle-password {
             position: absolute;
             right: 15px;
@@ -127,7 +126,6 @@
     <form action="/auth/login" method="post" class="card">
         <div class="title">Вход</div>
 
-        <label for="Email"></label>
         <div class="field">
             <input type="text" name="email" placeholder="Введите логин">
         </div>
@@ -137,7 +135,7 @@
             <button type="button" class="toggle-password" data-target="password">🙉</button>
         </div>
 
-        <button type="submit" class="sumbit-btn">Войти</button>
+        <button type="submit" class="submit-btn">Войти</button>
         <p>Нет аккаунта? <a href="/auth/register">Зарегистрируйтесь.</a></p>
     </form>
 
