@@ -3,11 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <title>Чат</title>
-
 <style>
-body {
-    font-family: sans-serif;
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
 }
 
 .container {
@@ -16,91 +22,213 @@ body {
 }
 
 .sidebar {
-    width: 220px;
-    border-right: 1px solid #ddd;
-    padding: 10px;
+    width: 240px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .room {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px;
-    border-radius: 6px;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
     cursor: pointer;
+    transition: all 0.2s;
+    color: #fff;
 }
 
 .room:hover {
-    background: #f0f0f0;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .avatar {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: #ccc;
+    background: linear-gradient(135deg, #6c5ce7, #a55eff);
+}
+
+.profile-link {
+    margin-top: auto;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.profile-btn {
+    display: block;
+    background: rgba(108, 92, 231, 0.3);
+    border: 1px solid rgba(108, 92, 231, 0.5);
+    padding: 10px;
+    border-radius: 40px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.profile-btn:hover {
+    background: rgba(108, 92, 231, 0.5);
+    transform: translateY(-2px);
 }
 
 .chat-area {
     flex: 1;
     display: flex;
     flex-direction: column;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
 }
 
 .header {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     font-weight: 600;
+    color: #fff;
+    font-size: 18px;
+}
+
+.header span {
+    color: #6c5ce7;
 }
 
 #chat {
     flex: 1;
     overflow-y: auto;
-    padding: 10px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
 .msg {
     max-width: 65%;
-    margin: 4px 0;
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 10px 16px;
+    border-radius: 18px;
     font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.msg:hover {
+    filter: brightness(1.05);
 }
 
 .me {
     align-self: flex-end;
-    border: 1px solid #ccc;
+    background: linear-gradient(135deg, #6c5ce7, #a55eff);
+    color: white;
+    border-bottom-right-radius: 4px;
 }
 
 .other {
     align-self: flex-start;
-    border: 1px solid #ddd;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-bottom-left-radius: 4px;
+}
+
+.context-menu {
+    position: fixed;
+    background: #1a1a2e;
+    border: 1px solid rgba(108, 92, 231, 0.5);
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 160px;
+    z-index: 1000;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    animation: fadeIn 0.15s ease;
+}
+
+.context-menu button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.context-menu button:hover {
+    background: rgba(108, 92, 231, 0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 .input-area {
     display: flex;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 16px 20px;
+    gap: 12px;
 }
 
 .input-area input {
     flex: 1;
-    padding: 10px;
-    border: none;
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    color: white;
+    font-size: 14px;
     outline: none;
+    transition: all 0.3s;
+}
+
+.input-area input:focus {
+    border-color: #6c5ce7;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 12px rgba(108, 92, 231, 0.3);
+}
+
+.input-area input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .input-area button {
-    padding: 10px 14px;
+    background: linear-gradient(135deg, #6c5ce7, #a55eff);
     border: none;
+    padding: 0 24px;
+    border-radius: 30px;
+    color: white;
+    font-weight: bold;
     cursor: pointer;
-    background: none;
+    transition: all 0.3s;
+}
+
+.input-area button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+}
+
+#chat::-webkit-scrollbar {
+    width: 6px;
+}
+#chat::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+#chat::-webkit-scrollbar-thumb {
+    background: #6c5ce7;
+    border-radius: 10px;
 }
 </style>
 </head>
 <body>
-    
 
 <div class="container">
 
@@ -109,85 +237,239 @@ body {
             <div class="avatar"></div>
             <span>User1</span>
         </div>
-
         <div class="room" onclick="selectRoom('user2')">
             <div class="avatar"></div>
             <span>User2</span>
         </div>
-
         <div class="room" onclick="selectRoom('user3')">
             <div class="avatar"></div>
             <span>User3</span>
         </div>
+        <div class="profile-link">
+            <a href="profile.html" class="profile-btn" id="profileLink">My profile</a>
+        </div>
     </div>
 
     <div class="chat-area">
-
         <div class="header">
-            Чат: <span id="currentRoom">user1</span>
+            Chat: <span id="currentRoom">user1</span>
         </div>
-
         <div id="chat"></div>
-
         <div class="input-area">
             <input type="text" id="messageInput"
-                   placeholder="Сообщение..."
+                   placeholder="Message..."
                    onkeydown="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()">➤</button>
+            <button onclick="sendMessage()">Send</button>
         </div>
-
     </div>
-
 </div>
 
 <script>
 const chat = document.getElementById('chat');
 const input = document.getElementById('messageInput');
 const currentRoomSpan = document.getElementById('currentRoom');
+const profileLink = document.getElementById('profileLink');
 
 let currentRoom = "user1";
 const userId = Math.random().toString(36).substring(7);
+let socket = null;
 
-const socket = new WebSocket("ws://localhost:8080/ws");
+let messageIdCounter = 0;
+let messagesMap = new Map();
 
-socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    if (data.room !== currentRoom) return;
-
+function addMessageToChat(text, isMe, msgId = null) {
     const msgDiv = document.createElement('div');
-
-    if (data.user === userId) {
-        msgDiv.className = 'msg me';
-    } else {
-        msgDiv.className = 'msg other';
-    }
-
-    msgDiv.innerText = data.text;
-
+    const finalMsgId = msgId || (messageIdCounter++);
+    msgDiv.className = `msg ${isMe ? 'me' : 'other'}`;
+    msgDiv.innerText = text;
+    msgDiv.setAttribute('data-msg-id', finalMsgId);
+    msgDiv.setAttribute('data-is-me', isMe);
+    msgDiv.setAttribute('data-text', text);
+    
+    msgDiv.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showContextMenu(e.clientX, e.clientY, finalMsgId, isMe, text);
+    });
+    
     chat.appendChild(msgDiv);
     chat.scrollTop = chat.scrollHeight;
-};
+    
+    messagesMap.set(finalMsgId, {
+        element: msgDiv,
+        text: text,
+        isMe: isMe,
+        room: currentRoom,
+        messageId: finalMsgId
+    });
+    
+    return finalMsgId;
+}
+
+let activeMenu = null;
+
+function showContextMenu(x, y, msgId, isMe, msgText) {
+    if (activeMenu) activeMenu.remove();
+    
+    const menu = document.createElement('div');
+    menu.className = 'context-menu';
+    menu.style.left = x + 'px';
+    menu.style.top = y + 'px';
+    
+    if (isMe) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => {
+            deleteMessage(msgId);
+            menu.remove();
+            activeMenu = null;
+        };
+        menu.appendChild(deleteBtn);
+    }
+    
+    const replyBtn = document.createElement('button');
+    replyBtn.textContent = 'Reply';
+    replyBtn.onclick = () => {
+        input.value = `Reply to: ${msgText.substring(0, 50)}... `;
+        input.focus();
+        menu.remove();
+        activeMenu = null;
+    };
+    menu.appendChild(replyBtn);
+    
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copy text';
+    copyBtn.onclick = () => {
+        navigator.clipboard.writeText(msgText).then(() => {
+            const notify = document.createElement('div');
+            notify.textContent = 'Copied';
+            notify.style.position = 'fixed';
+            notify.style.bottom = '20px';
+            notify.style.right = '20px';
+            notify.style.background = '#6c5ce7';
+            notify.style.color = 'white';
+            notify.style.padding = '8px 16px';
+            notify.style.borderRadius = '20px';
+            notify.style.zIndex = '1001';
+            document.body.appendChild(notify);
+            setTimeout(() => notify.remove(), 1500);
+        });
+        menu.remove();
+        activeMenu = null;
+    };
+    menu.appendChild(copyBtn);
+    
+    document.body.appendChild(menu);
+    activeMenu = menu;
+    
+    const closeHandler = (e) => {
+        if (!menu.contains(e.target)) {
+            menu.remove();
+            activeMenu = null;
+            document.removeEventListener('click', closeHandler);
+        }
+    };
+    setTimeout(() => {
+        document.addEventListener('click', closeHandler);
+    }, 10);
+}
+
+function deleteMessage(msgId) {
+    const msgData = messagesMap.get(msgId);
+    if (!msgData || !msgData.isMe) return;
+    
+    if (msgData.element && msgData.element.parentNode) {
+        msgData.element.remove();
+    }
+    messagesMap.delete(msgId);
+    
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        const deleteMsg = {
+            user: userId,
+            type: 'delete',
+            messageId: msgId,
+            room: currentRoom
+        };
+        socket.send(JSON.stringify(deleteMsg));
+    }
+}
+
+function connectWebSocket() {
+    if (socket) {
+        try { socket.close(); } catch(e) {}
+    }
+    
+    try {
+        socket = new WebSocket("ws://localhost:8080/ws");
+        
+        socket.onopen = () => {
+            console.log("WebSocket connected");
+        };
+        
+        socket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'delete') {
+                    if (data.room === currentRoom && messagesMap.has(data.messageId)) {
+                        const msgData = messagesMap.get(data.messageId);
+                        if (msgData.element && msgData.element.parentNode) {
+                            msgData.element.remove();
+                        }
+                        messagesMap.delete(data.messageId);
+                    }
+                    return;
+                }
+                
+                if (data.room !== currentRoom) return;
+                if (data.user === userId) return;
+                
+                addMessageToChat(data.text, false, data.messageId);
+            } catch(e) {}
+        };
+        
+        socket.onerror = () => {
+            console.log("Server not running");
+        };
+    } catch(e) {
+        console.log("Connection error");
+    }
+}
 
 function selectRoom(room) {
     currentRoom = room;
     currentRoomSpan.innerText = room;
     chat.innerHTML = "";
+    messagesMap.clear();
+    messageIdCounter = 0;
 }
 
 function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
-
-    const msg = {
-        user: userId,
-        text: text,
-        room: currentRoom
-    };
-
-    socket.send(JSON.stringify(msg));
+    
+    const msgId = addMessageToChat(text, true);
+    
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        const msg = {
+            user: userId,
+            text: text,
+            room: currentRoom,
+            messageId: msgId,
+            type: 'message'
+        };
+        socket.send(JSON.stringify(msg));
+    }
+    
     input.value = '';
 }
+
+profileLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'profile.html';
+});
+
+connectWebSocket();
 </script>
 
 </body>
