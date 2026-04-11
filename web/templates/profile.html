@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .profile-card {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .left {
+            background: rgba(108, 92, 231, 0.15);
+            padding: 30px 25px;
+            text-align: center;
+            width: 280px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .avatar {
+            font-size: 80px;
+            background: linear-gradient(135deg, #6c5ce7, #a55eff);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3);
+        }
+        
+        .userid {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        .username-display {
+            color: #fff;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-top: 15px;
+        }
+
+        .tag-display {
+            color: #a55eff;
+            font-size: 14px;
+        }
+
+        .right {
+            flex: 1;
+            padding: 30px;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 25px;
+            border-left: 4px solid #6c5ce7;
+            padding-left: 15px;
+        }
+
+        .data-block {
+            display: grid;
+            grid-template-columns: 110px 1fr;
+            gap: 12px 15px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .data-block span:first-child {
+            color: #a0a0b0;
+            font-weight: 500;
+        }
+
+        .data-block span:last-child {
+            color: #fff;
+            word-break: break-all;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #6c5ce7, #a55eff);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: #fff;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 28px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            border: 1px solid rgba(108, 92, 231, 0.5);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            animation: fadeInScale 0.3s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-content h3 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .choice-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 14px;
+            border-radius: 40px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .choice-btn:hover {
+            background: rgba(108, 92, 231, 0.3);
+            border-color: #6c5ce7;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #a0a0b0;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #6c5ce7;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .back-choice-btn {
+            background: none;
+            border: none;
+            color: #a55eff;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #a0a0b0;
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        span {
+            color: #a0a0b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        <div class="left">
+            <div class="avatar">🙉</div>
+            <div class="userid">ID: <b>111111</b></div>
+            <div class="username-display" id="displayUsername">User</div>
+            <div class="tag-display" id="displayTag">@Bleb</div>
+        </div>
+
+        <div class="right">
+            <div class="title">Profile</div>
+
+            <div class="data-block">
+                <span>Nickname</span>
+                <span id="displayUsernameRight">User</span>
+
+                <span>Nametag</span>
+                <span id="displayTagRight">@Bleb</span>
+
+            </div>
+
+            <div class="actions">
+                <button class="edit-btn" id="editBtn">Edit your data</button>
+                <button class="back-btn" onclick="window.location.href='index.html'">back</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModalBtn">&times;</button>
+            
+            <div id="choiceMenu">
+                <h3>What do you want to change?</h3>
+                <div class="choice-buttons">
+                    <button class="choice-btn" data-action="nickname">Change nickname</button>
+                    <button class="choice-btn" data-action="tag">Change Nametag</button>
+                    <button class="choice-btn" data-action="password">Change password</button>
+                </div>
+            </div>
+
+            <div id="nicknameForm" class="hidden">
+                <h3>Change nickname</h3>
+                <div class="input-group">
+                    <label>New nickname</label>
+                    <input type="text" id="newNickname" placeholder="Enter new nickname">
+                </div>
+                <div class="action-buttons">
+                    <button class="save-btn" id="saveNicknameBtn">Save</button>
+                    <button class="cancel-btn" id="cancelNicknameBtn">Cancel</button>
+                </div>
+                <button class="back-choice-btn" id="backToChoiceFromNickname">Back</button>
+            </div>
+
+            <div id="tagForm" class="hidden">
+                <h3>Change Nametag</h3>
+                <div class="input-group">
+                    <label>New Nametag</label>
+                    <input type="text" id="newTag" placeholder="@username">
+                </div>
+                <div class="action-buttons">
+                    <button class="save-btn" id="saveTagBtn">Save</button>
+                    <button class="cancel-btn" id="cancelTagBtn">Cancel</button>
+                </div>
+                <button class="back-choice-btn" id="backToChoiceFromTag">Back</button>
+            </div>
+
+            <div id="passwordForm" class="hidden">
+                <h3>Change password</h3>
+                <div class="input-group">
+                    <label>Current password</label>
+                    <input type="password" id="currentPassword" placeholder="Enter current password">
+                </div>
+                <div class="input-group">
+                    <label>New password</label>
+                    <input type="password" id="newPassword" placeholder="Enter new password">
+                </div>
+                <div class="input-group">
+                    <label>Confirm new password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                </div>
+                <div class="action-buttons">
+                    <button class="save-btn" id="savePasswordBtn">Save</button>
+                    <button class="cancel-btn" id="cancelPasswordBtn">Cancel</button>
+                </div>
+                <button class="back-choice-btn" id="backToChoiceFromPassword">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modal = document.getElementById('editModal');
+        const editBtn = document.getElementById('editBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        const choiceMenu = document.getElementById('choiceMenu');
+        const nicknameForm = document.getElementById('nicknameForm');
+        const tagForm = document.getElementById('tagForm');
+        const passwordForm = document.getElementById('passwordForm');
+
+        let currentUser = {
+            nickname: "User",
+            tag: "@Bleb",
+            password: "password1"
+        };
+
+        function togglePassword(element) {
+            if (element.textContent === '••••••••') {
+                element.textContent = currentUser.password;
+            } else {
+                element.textContent = '••••••••';
+            }
+        }
+
+        function backToChoice() {
+            choiceMenu.classList.remove('hidden');
+            nicknameForm.classList.add('hidden');
+            tagForm.classList.add('hidden');
+            passwordForm.classList.add('hidden');
+            document.getElementById('newNickname').value = '';
+            document.getElementById('newTag').value = '';
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        }
+
+        function updateProfileDisplay() {
+            document.getElementById('displayUsername').textContent = currentUser.nickname;
+            document.getElementById('displayUsernameRight').textContent = currentUser.nickname;
+            document.getElementById('displayTag').textContent = currentUser.tag;
+            document.getElementById('displayTagRight').textContent = currentUser.tag;
+        }
+
+        function openModal() {
+            backToChoice();
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        document.querySelectorAll('.choice-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.getAttribute('data-action');
+                choiceMenu.classList.add('hidden');
+                if (action === 'nickname') nicknameForm.classList.remove('hidden');
+                if (action === 'tag') tagForm.classList.remove('hidden');
+                if (action === 'password') passwordForm.classList.remove('hidden');
+            });
+        });
+
+        document.getElementById('backToChoiceFromNickname').addEventListener('click', backToChoice);
+        document.getElementById('backToChoiceFromTag').addEventListener('click', backToChoice);
+        document.getElementById('backToChoiceFromPassword').addEventListener('click', backToChoice);
+        document.getElementById('cancelNicknameBtn').addEventListener('click', backToChoice);
+        document.getElementById('cancelTagBtn').addEventListener('click', backToChoice);
+        document.getElementById('cancelPasswordBtn').addEventListener('click', backToChoice);
+
+        document.getElementById('saveNicknameBtn').addEventListener('click', () => {
+            const newNickname = document.getElementById('newNickname').value.trim();
+            if (newNickname === '') {
+                alert('Enter nickname');
+                return;
+            }
+            currentUser.nickname = newNickname;
+            updateProfileDisplay();
+            alert('Nickname updated!');
+            backToChoice();
+            closeModal();
+        });
+
+        document.getElementById('saveTagBtn').addEventListener('click', () => {
+            let newTag = document.getElementById('newTag').value.trim();
+            if (newTag === '') {
+                alert('Enter tag');
+                return;
+            }
+            if (!newTag.startsWith('@')) newTag = '@' + newTag;
+            currentUser.tag = newTag;
+            updateProfileDisplay();
+            alert('Tag updated!');
+            backToChoice();
+            closeModal();
+        });
+
+        document.getElementById('savePasswordBtn').addEventListener('click', () => {
+            const currentPwd = document.getElementById('currentPassword').value;
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = document.getElementById('confirmPassword').value;
+
+            if (currentPwd !== currentUser.password) {
+                alert('Wrong current password');
+                return;
+            }
+            if (newPwd === '') {
+                alert('Enter new password');
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                alert('Passwords do not match');
+                return;
+            }
+            if (newPwd === currentPwd) {
+                alert('New password is same as old');
+                return;
+            }
+
+            currentUser.password = newPwd;
+            const passSpan = document.querySelector('.password');
+            if (passSpan.textContent !== '••••••••') {
+                passSpan.textContent = currentUser.password;
+            }
+            alert('Password updated!');
+            backToChoice();
+            closeModal();
+        });
+
+        editBtn.addEventListener('click', openModal);
+        closeModalBtn.addEventListener('click', closeModal);
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) closeModal();
+        });
+    </script>
+</body>
+</html>
