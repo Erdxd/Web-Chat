@@ -3,24 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <title>Чат</title>
-
 <style>
 body {
     font-family: sans-serif;
     margin: 0;
 }
-
 .container {
     display: flex;
     height: 100vh;
 }
-
 .sidebar {
     width: 220px;
     border-right: 1px solid #ddd;
     padding: 10px;
 }
-
 .room {
     display: flex;
     align-items: center;
@@ -29,30 +25,25 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
-
 .room:hover {
     background: #f0f0f0;
 }
-
 .avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
     background: #ccc;
 }
-
 .chat-area {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
-
 .header {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     font-weight: 600;
 }
-
 #chat {
     flex: 1;
     overflow-y: auto;
@@ -60,37 +51,34 @@ body {
     display: flex;
     flex-direction: column;
 }
-
 .msg {
     max-width: 65%;
     margin: 4px 0;
     padding: 6px 10px;
     border-radius: 6px;
     font-size: 14px;
+    word-wrap: break-word;
 }
-
 .me {
     align-self: flex-end;
-    border: 1px solid #ccc;
+    background: #e3f2fd;
+    border: 1px solid #90caf9;
 }
-
 .other {
     align-self: flex-start;
+    background: #f5f5f5;
     border: 1px solid #ddd;
 }
-
 .input-area {
     display: flex;
     border-top: 1px solid #ddd;
 }
-
 .input-area input {
     flex: 1;
     padding: 10px;
     border: none;
     outline: none;
 }
-
 .input-area button {
     padding: 10px 14px;
     border: none;
@@ -100,95 +88,117 @@ body {
 </style>
 </head>
 <body>
-    
-
 <div class="container">
-
     <div class="sidebar">
-        <div class="room" onclick="selectRoom('user1')">
+        <div class="room">
             <div class="avatar"></div>
-            <span>User1</span>
+            <span>Комната 1</span>
         </div>
-
-        <div class="room" onclick="selectRoom('user2')">
+        <div class="room">
             <div class="avatar"></div>
-            <span>User2</span>
+            <span>Комната 2</span>
         </div>
-
-        <div class="room" onclick="selectRoom('user3')">
+        <div class="room">
             <div class="avatar"></div>
-            <span>User3</span>
+            <span>Комната 3</span>
         </div>
     </div>
-
     <div class="chat-area">
-
         <div class="header">
-            Чат: <span id="currentRoom">user1</span>
+            Чат: <span id="currentRoom">1</span>
         </div>
-
         <div id="chat"></div>
-
         <div class="input-area">
-            <input type="text" id="messageInput"
-                   placeholder="Сообщение..."
-                   onkeydown="if(event.key==='Enter') sendMessage()">
+            <input type="text" id="messageInput" placeholder="Сообщение..." onkeydown="if(event.key==='Enter') sendMessage()">
             <button onclick="sendMessage()">➤</button>
         </div>
-
     </div>
-
 </div>
-
 <script>
 const chat = document.getElementById('chat');
 const input = document.getElementById('messageInput');
 const currentRoomSpan = document.getElementById('currentRoom');
 
-let currentRoom = "user1";
-const userId = Math.random().toString(36).substring(7);
+let currentRoom = 1;
+let myUserId = null;
+let socket;
 
-const socket = new WebSocket("ws://localhost:8080/ws");
-
-socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    if (data.room !== currentRoom) return;
-
-    const msgDiv = document.createElement('div');
-
-    if (data.user === userId) {
-        msgDiv.className = 'msg me';
-    } else {
-        msgDiv.className = 'msg other';
+// Функция для получения своего userId из куки (JWT)
+function getMyUserId() {
+    const cookies = document.cookie.split('; ');
+    const tokenCookie = cookies.find(c => c.startsWith('token='));
+    if (!tokenCookie) return null;
+    const token = tokenCookie.split('=')[1];
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.User_id;
+    } catch (e) {
+        return null;
     }
+}
 
-    msgDiv.innerText = data.text;
-
-    chat.appendChild(msgDiv);
-    chat.scrollTop = chat.scrollHeight;
-};
+function connectToRoom(room) {
+    if (socket) {
+        socket.close();
+    }
+    
+    socket = new WebSocket(`ws://localhost:8080/ws?room=${room}`);
+    
+    socket.onopen = () => {
+        console.log('WebSocket connected to room', room);
+        myUserId = getMyUserId();
+    };
+    
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'message') {
+            const msgDiv = document.createElement('div');
+            // Сравниваем userId из сообщения с моим userId
+            msgDiv.className = data.userId === myUserId ? 'msg me' : 'msg other';
+            msgDiv.innerText = data.content;
+            msgDiv.dataset.messageId = data.id;
+            chat.appendChild(msgDiv);
+            chat.scrollTop = chat.scrollHeight;
+        } else if (data.type === 'delete') {
+            const msgElement = document.querySelector(`[data-message-id="${data.id}"]`);
+            if (msgElement) msgElement.remove();
+        }
+    };
+    
+    socket.onerror = (err) => console.error('WebSocket error:', err);
+    socket.onclose = () => console.log('WebSocket closed');
+}
 
 function selectRoom(room) {
     currentRoom = room;
     currentRoomSpan.innerText = room;
-    chat.innerHTML = "";
+    chat.innerHTML = '';
+    connectToRoom(room);
 }
 
 function sendMessage() {
     const text = input.value.trim();
     if (!text) return;
-
-    const msg = {
-        user: userId,
-        text: text,
-        room: currentRoom
-    };
-
-    socket.send(JSON.stringify(msg));
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.error('Socket not connected');
+        return;
+    }
+    socket.send(JSON.stringify({ text: text }));
     input.value = '';
 }
-</script>
 
+// Привязываем клики к комнатам
+document.querySelectorAll('.room').forEach((el, index) => {
+    el.onclick = () => selectRoom(index + 1);
+});
+
+// Получаем свой userId при загрузкеф
+myUserId = getMyUserId();
+console.log('My userId:', myUserId);
+
+// Подключаемся к комнате 1
+connectToRoom(1);
+</script>
 </body>
 </html>

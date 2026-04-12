@@ -13,12 +13,12 @@ import (
 type Auth struct {
 	AuthS     service.UserService
 	templates *template.Template
-	Jwt       service.Jwt
-	Authjwt   middleware.JwtM
+	Jwt       *service.Jwt
+	Authjwt   *middleware.JwtM
 }
 
-func NewAuth(AuthS service.UserService, tmpl *template.Template) *Auth {
-	return &Auth{AuthS: AuthS, templates: tmpl}
+func NewAuth(AuthS service.UserService, tmpl *template.Template, AuthJwt *middleware.JwtM, jwtService *service.Jwt) *Auth {
+	return &Auth{AuthS: AuthS, templates: tmpl, Authjwt: AuthJwt, Jwt: jwtService}
 }
 func (Au *Auth) CreateAcc(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
@@ -59,15 +59,22 @@ func (Au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 		}
 		Userid, admin, err := Au.AuthS.User.GetUserDataForJWT(Email)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, "Cant Auth you", 401)
 			return
 		}
 		token, err := Au.Jwt.CreateToken(Userid, admin)
+
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println(token)
 		if token == "" {
 			http.Error(w, "Unauthorized", 401)
+			return
 		}
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 		http.SetCookie(w, &http.Cookie{
 			Name:     "token",
 			Value:    token,
@@ -76,6 +83,7 @@ func (Au *Auth) Login(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,
 			Secure:   false,
 		})
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 	Au.templates.ExecuteTemplate(w, "login.html", nil)
 

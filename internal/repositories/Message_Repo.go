@@ -15,7 +15,8 @@ type RepoMessage struct {
 func NewRepo(db *sql.DB) repository.Message {
 	return &RepoMessage{db: db}
 }
-func (R RepoMessage) Save(msg model.Message, IdUser int) error {
+func (R *RepoMessage) Save(msg model.Message, IdUser int) (int64, error) {
+	var Id int64
 	log.Println(msg)
 	modelDB := entities.Message{
 		Id:        msg.Id,
@@ -24,15 +25,16 @@ func (R RepoMessage) Save(msg model.Message, IdUser int) error {
 		CreatedAt: msg.CreatedAt,
 		Content:   msg.Content,
 	}
-	SqlStatement := (`INSERT INTO messages(useridmessage,roomidmessage,CAmessage,message) VALUES ($1,$2,$3,$4)`)
-	_, err := R.db.Exec(SqlStatement, IdUser, modelDB.RoomId, modelDB.CreatedAt, modelDB.Content)
+	SqlStatement := (`INSERT INTO messages(useridmessage,roomidmessage,CAmessage,message) VALUES ($1,$2,$3,$4) RETURNING idmessage`)
+	err := R.db.QueryRow(SqlStatement, IdUser, modelDB.RoomId, modelDB.CreatedAt, modelDB.Content).Scan(&Id)
 	if err != nil {
 		log.Println(err)
+		return 0, err
 	}
 
-	return nil
+	return Id, err
 }
-func (R RepoMessage) CheckMessages(RoomId int) ([]model.Message, error) {
+func (R *RepoMessage) CheckMessages(RoomId int) ([]model.Message, error) {
 	log.Println(RoomId)
 	var messages []model.Message
 	rows, err := R.db.Query(`SELECT * FROM messages WHERE roomidmessage=$1 `, RoomId)
@@ -58,4 +60,13 @@ func (R RepoMessage) CheckMessages(RoomId int) ([]model.Message, error) {
 	}
 	log.Println(messages)
 	return messages, err
+}
+func (R *RepoMessage) DeleteMessage(UserId int, RoomdId int, Id int64) error {
+	SqlStatement := (`DELETE FROM messages WHERE userid=$1 AND roomid=$2 AND id=$3`)
+	_, err := R.db.Exec(SqlStatement, UserId, RoomdId, Id)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

@@ -2,7 +2,7 @@ package service
 
 import (
 	"Web-Chat/internal/domain/repository/auth"
-	jwt "Web-Chat/internal/infrastructure/Jwt"
+	"log"
 )
 
 type Jwt struct {
@@ -13,9 +13,10 @@ func NewJwt(jwt auth.JwtToken) *Jwt {
 	return &Jwt{Jwt: jwt}
 }
 func (J *Jwt) CreateToken(userid int, admin bool) (string, error) {
-	token, err := jwt.NewJwtToken().GenerateToken(userid, admin)
+	token, err := J.Jwt.GenerateToken(userid, admin)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
-	return token, nil
+	log.Println(token)
+	return token, err
 }

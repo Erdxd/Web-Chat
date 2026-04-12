@@ -7,13 +7,12 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var JwtKey []byte
-
 type JwtToken struct {
+	Key []byte
 }
 
-func NewJwtToken() *JwtToken {
-	return &JwtToken{}
+func NewJwtToken(key []byte) *JwtToken {
+	return &JwtToken{Key: key}
 }
 func (J *JwtToken) GenerateToken(UserId int, admin bool) (string, error) {
 	ActionTime := time.Now().Add(24 * time.Hour)
@@ -25,7 +24,7 @@ func (J *JwtToken) GenerateToken(UserId int, admin bool) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims)
-	tokenStr, err := token.SignedString(token)
+	tokenStr, err := token.SignedString(J.Key)
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +32,7 @@ func (J *JwtToken) GenerateToken(UserId int, admin bool) (string, error) {
 }
 func (J *JwtToken) ValidateToken(Token string) (*model.Claims, error) {
 	Claims := &model.Claims{}
-	token, err := jwt.ParseWithClaims(Token, Claims, func(t *jwt.Token) (interface{}, error) { return JwtKey, nil })
+	token, err := jwt.ParseWithClaims(Token, Claims, func(t *jwt.Token) (interface{}, error) { return J.Key, nil })
 	if err != nil {
 		return nil, err
 	}

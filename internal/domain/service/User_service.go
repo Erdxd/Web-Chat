@@ -5,7 +5,6 @@ import (
 	"Web-Chat/internal/domain/repository"
 	"Web-Chat/internal/domain/repository/auth"
 	"errors"
-	"log"
 )
 
 type UserService struct {
@@ -26,7 +25,7 @@ func (US *UserService) CreateAcc(Data model.User, repeatpassword string) error {
 	}
 
 	Data.Password = string(HashedPassword)
-	log.Println(Data)
+
 	return US.User.CreateAcc(Data)
 }
 func (US *UserService) Login(Email string, PasswordFromUser string) error {
@@ -34,10 +33,9 @@ func (US *UserService) Login(Email string, PasswordFromUser string) error {
 	if err != nil {
 		return err
 	}
-	log.Println(PasswordFromUser)
-	log.Println(len(HashedPassword))
+
 	Compare, err := US.Hash.Compare([]byte(HashedPassword), PasswordFromUser)
-	log.Println(Compare)
+
 	if err != nil {
 		return err
 	}

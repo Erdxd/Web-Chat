@@ -14,10 +14,12 @@ type ServiceMessage struct {
 func NewServiceMessage(Repo repository.Message) *ServiceMessage {
 	return &ServiceMessage{RepoM: Repo}
 }
-func (S *ServiceMessage) Save(msg model.Message, IdUser int) error {
+func (S *ServiceMessage) Save(msg model.Message, IdUser int) (int64, error) {
 	log.Println(msg)
 	if msg.Content == "" {
-		return errors.New("Empty field")
+		log.Println(msg)
+		return 0, errors.New("Empty field")
+
 	}
 
 	return S.RepoM.Save(msg, IdUser)
@@ -25,4 +27,8 @@ func (S *ServiceMessage) Save(msg model.Message, IdUser int) error {
 func (S *ServiceMessage) CheckMessage(RoomId int) ([]model.Message, error) {
 	log.Println(RoomId)
 	return S.RepoM.CheckMessages(RoomId)
+}
+func (S *ServiceMessage) DeleteMessage(UserId int, RoomdId int, Id int64) error {
+	return S.RepoM.DeleteMessage(UserId, RoomdId, Id)
+
 }
