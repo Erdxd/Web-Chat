@@ -14,22 +14,26 @@ body {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 100vh;
+    perspective: 1200px;
 }
 
 .container {
     display: flex;
     height: 100vh;
+    transform-style: preserve-3d;
 }
 
 .sidebar {
     width: 240px;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(108, 92, 231, 0.4);
     padding: 20px 10px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    transform: translateZ(15px);
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.6);
 }
 
 .room {
@@ -37,14 +41,19 @@ body {
     align-items: center;
     gap: 12px;
     padding: 12px;
-    border-radius: 12px;
+    border-radius: 14px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.2);
     color: #fff;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(108, 92, 231, 0.2);
 }
 
 .room:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(108, 92, 231, 0.25);
+    border-color: rgba(108, 92, 231, 0.7);
+    transform: translateX(6px) scale(1.02);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
 }
 
 .avatar {
@@ -52,6 +61,7 @@ body {
     height: 36px;
     border-radius: 50%;
     background: linear-gradient(135deg, #6c5ce7, #a55eff);
+    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.4);
 }
 
 .profile-link {
@@ -73,8 +83,9 @@ body {
 }
 
 .profile-btn:hover {
-    background: rgba(108, 92, 231, 0.5);
-    transform: translateY(-2px);
+    background: rgba(108, 92, 231, 0.6);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
 }
 
 .chat-area {
@@ -82,19 +93,22 @@ body {
     display: flex;
     flex-direction: column;
     background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(6px);
+    transform: translateZ(5px);
 }
 
 .header {
     padding: 15px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(108, 92, 231, 0.3);
     font-weight: 600;
     color: #fff;
     font-size: 18px;
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .header span {
     color: #6c5ce7;
+    text-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
 }
 
 #chat {
@@ -109,17 +123,18 @@ body {
 .msg {
     max-width: 65%;
     padding: 10px 16px;
-    border-radius: 18px;
+    border-radius: 20px;
     font-size: 14px;
     line-height: 1.4;
     word-wrap: break-word;
-    position: relative;
     cursor: pointer;
     transition: all 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .msg:hover {
-    filter: brightness(1.05);
+    transform: scale(1.01);
+    filter: drop-shadow(0 0 6px rgba(108, 92, 231, 0.4));
 }
 
 .me {
@@ -131,21 +146,23 @@ body {
 
 .other {
     align-self: flex-start;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: #fff;
     border-bottom-left-radius: 4px;
+    border: 1px solid rgba(108, 92, 231, 0.3);
 }
 
 .context-menu {
     position: fixed;
     background: #1a1a2e;
-    border: 1px solid rgba(108, 92, 231, 0.5);
-    border-radius: 12px;
+    backdrop-filter: blur(16px);
+    border: 1px solid #6c5ce7;
+    border-radius: 14px;
     padding: 8px 0;
     min-width: 160px;
     z-index: 1000;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    animation: fadeIn 0.15s ease;
+    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.6);
+    animation: fadeIn 0.15s cubic-bezier(0.2, 0.9, 0.4, 1.2);
 }
 
 .context-menu button {
@@ -158,45 +175,49 @@ body {
     text-align: left;
     cursor: pointer;
     font-size: 14px;
-    transition: all 0.2s;
+    transition: all 0.15s;
 }
 
 .context-menu button:hover {
-    background: rgba(108, 92, 231, 0.3);
+    background: rgba(108, 92, 231, 0.4);
+    padding-left: 24px;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .input-area {
     display: flex;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(108, 92, 231, 0.3);
     padding: 16px 20px;
     gap: 12px;
+    background: rgba(0, 0, 0, 0.4);
 }
 
 .input-area input {
     flex: 1;
     padding: 12px 18px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(108, 92, 231, 0.4);
     border-radius: 30px;
     color: white;
     font-size: 14px;
     outline: none;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
 .input-area input:focus {
     border-color: #6c5ce7;
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 12px rgba(108, 92, 231, 0.3);
-}
-
-.input-area input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
 }
 
 .input-area button {
@@ -207,19 +228,20 @@ body {
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .input-area button:hover {
     transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    box-shadow: 0 6px 18px rgba(108, 92, 231, 0.4);
 }
 
 #chat::-webkit-scrollbar {
     width: 6px;
 }
 #chat::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
 }
 #chat::-webkit-scrollbar-thumb {
@@ -233,20 +255,20 @@ body {
 <div class="container">
 
     <div class="sidebar">
-        <div class="room" onclick="selectRoom('user1')">
+        <div class="room" data-room="user1">
             <div class="avatar"></div>
             <span>User1</span>
         </div>
-        <div class="room" onclick="selectRoom('user2')">
+        <div class="room" data-room="user2">
             <div class="avatar"></div>
             <span>User2</span>
         </div>
-        <div class="room" onclick="selectRoom('user3')">
+        <div class="room" data-room="user3">
             <div class="avatar"></div>
             <span>User3</span>
         </div>
         <div class="profile-link">
-            <a href="profile.html" class="profile-btn" id="profileLink">My profile</a>
+            <a href="#" class="profile-btn" id="profileLink">My profile</a>
         </div>
     </div>
 
@@ -277,6 +299,26 @@ let socket = null;
 let messageIdCounter = 0;
 let messagesMap = new Map();
 
+function updateRoomUrl(roomId) {
+    const newUrl = `/room/${roomId}`;
+    window.history.pushState({ room: roomId }, '', newUrl);
+}
+
+function updateMessageUrl(messageId) {
+    window.location.hash = `message=${messageId}`;
+}
+
+function scrollToMessage(messageId) {
+    const msgData = messagesMap.get(parseInt(messageId));
+    if (msgData && msgData.element) {
+        msgData.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        msgData.element.style.outline = '2px solid #6c5ce7';
+        setTimeout(() => {
+            msgData.element.style.outline = '';
+        }, 2000);
+    }
+}
+
 function addMessageToChat(text, isMe, msgId = null) {
     const msgDiv = document.createElement('div');
     const finalMsgId = msgId || (messageIdCounter++);
@@ -285,6 +327,11 @@ function addMessageToChat(text, isMe, msgId = null) {
     msgDiv.setAttribute('data-msg-id', finalMsgId);
     msgDiv.setAttribute('data-is-me', isMe);
     msgDiv.setAttribute('data-text', text);
+    
+    msgDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        updateMessageUrl(finalMsgId);
+    });
     
     msgDiv.addEventListener('contextmenu', (e) => {
         e.preventDefault();
@@ -436,12 +483,33 @@ function connectWebSocket() {
     }
 }
 
-function selectRoom(room) {
-    currentRoom = room;
-    currentRoomSpan.innerText = room;
+function selectRoom(roomId) {
+    currentRoom = roomId;
+    currentRoomSpan.innerText = roomId;
     chat.innerHTML = "";
     messagesMap.clear();
     messageIdCounter = 0;
+    updateRoomUrl(roomId);
+}
+
+function loadRoomFromUrl() {
+    const path = window.location.pathname;
+    const match = path.match(/\/room\/(.+)/);
+    if (match) {
+        const roomId = match[1];
+        if (roomId === 'user1' || roomId === 'user2' || roomId === 'user3') {
+            selectRoom(roomId);
+        }
+    }
+}
+
+function loadMessageFromUrl() {
+    if (window.location.hash.startsWith('#message=')) {
+        const msgId = window.location.hash.split('=')[1];
+        setTimeout(() => {
+            scrollToMessage(msgId);
+        }, 500);
+    }
 }
 
 function sendMessage() {
@@ -464,12 +532,23 @@ function sendMessage() {
     input.value = '';
 }
 
+document.querySelectorAll('.room').forEach(roomEl => {
+    roomEl.addEventListener('click', () => {
+        const roomId = roomEl.getAttribute('data-room');
+        selectRoom(roomId);
+    });
+});
+
 profileLink.addEventListener('click', (e) => {
     e.preventDefault();
     window.location.href = 'profile.html';
 });
 
 connectWebSocket();
+loadRoomFromUrl();
+window.addEventListener('load', () => {
+    loadMessageFromUrl();
+});
 </script>
 
 </body>
