@@ -11,7 +11,7 @@ type Message struct {
 }
 type User struct {
 	UserId    int       `json:"userid" db:"userid"`
-	Name      string    `db:"name"`
+	Name      string    `json:"name" db:"name"`
 	Password  string    `db:"password"`
 	Email     string    `db:"email"`
 	CreatedAt time.Time `db:"ca"`

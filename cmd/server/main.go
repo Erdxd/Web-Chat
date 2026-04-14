@@ -39,9 +39,6 @@ func main() {
 		log.Println(err)
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/templates/index.html")
-	})
 	hub := http1.NewHub()
 	go hub.Run()
 
@@ -54,7 +51,9 @@ func main() {
 	jwtService2 := service.NewJwt(jwtservice)
 
 	jwtMiddleware := middleware.NewJwtM(jwtservice)
-
+	http.HandleFunc("/", jwtMiddleware.VerifUser(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "web/templates/index.html")
+	}))
 	MessageRepo := repositories.NewRepo(db)
 	serviceM := service.NewServiceMessage(MessageRepo)
 	handlerMain := http1.NewChatHandler(serviceM, hub, tmpl, jwtMiddleware)
@@ -62,11 +61,18 @@ func main() {
 	Hasher := hasher.NewHasher()
 	ServiceU := service.NewUserService(UserRepo, Hasher)
 	HandlerUser := handlers.NewAuth(*ServiceU, tmpl, jwtMiddleware, jwtService2)
+	AdminRepo := repositories.NewAdminRepo(db)
+	AdminService := service.NewAdminService(AdminRepo)
+	AdminHandler := handlers.NewAdminHandler(*AdminService, tmpl)
 
 	http.HandleFunc("/ws", handlerMain.OpenPipe)
+
 	http.HandleFunc("/auth/login", HandlerUser.Login)
 	http.HandleFunc("/auth/register", HandlerUser.CreateAcc)
 	http.HandleFunc("/ws/delete", handlerMain.DeleteMessage)
+	http.HandleFunc("/admin/CheckUsers", jwtMiddleware.VerifAdmin(AdminHandler.CheckAllUsers))
+	http.HandleFunc("/admin/FoundUser", jwtMiddleware.VerifAdmin(AdminHandler.FoundByUserId))
+	http.HandleFunc("/admin/deleteUser", jwtMiddleware.VerifAdmin(AdminHandler.DeleteUser))
 	http.ListenAndServe(":8080", nil)
 	log.Println("localhost:8080")
 }
