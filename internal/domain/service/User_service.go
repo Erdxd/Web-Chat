@@ -44,3 +44,6 @@ func (US *UserService) Login(Email string, PasswordFromUser string) error {
 	}
 	return nil
 }
+func (US *UserService) GetUserId(usertag string) (int, error) {
+	return US.User.GetUserId(usertag)
+}

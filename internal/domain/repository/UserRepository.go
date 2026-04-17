@@ -6,4 +6,5 @@ type User interface {
 	CreateAcc(model.User) error
 	Login(Email string) (string, error)
 	GetUserDataForJWT(email string) (int, bool, error)
+	GetUserId(usertag string) (int, error)
 }
