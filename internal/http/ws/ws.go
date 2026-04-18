@@ -25,13 +25,18 @@ var upgrader = websocket.Upgrader{
 
 type ChatHandler struct {
 	serviceM      service.ServiceMessage
+	ServiceU      service.UserService
 	Hub           *Hub
 	templates     *template.Template
 	JwtMiddleware *middleware.JwtM
 }
 
-func NewChatHandler(s *service.ServiceMessage, h *Hub, templates *template.Template, JwtMiddleware *middleware.JwtM) *ChatHandler {
-	return &ChatHandler{serviceM: *s, Hub: h, templates: templates, JwtMiddleware: JwtMiddleware}
+var msg struct {
+	Text string `json:"text"`
+}
+
+func NewChatHandler(s *service.ServiceMessage, h *Hub, templates *template.Template, JwtMiddleware *middleware.JwtM, UserService service.UserService) *ChatHandler {
+	return &ChatHandler{serviceM: *s, Hub: h, templates: templates, JwtMiddleware: JwtMiddleware, ServiceU: UserService}
 }
 func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 	roomId := r.URL.Query().Get("room")
@@ -40,6 +45,7 @@ func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Cant parse your URl", 500)
 		return
 	}
+
 	Claims, err := C.JwtMiddleware.GetDataFromJwt(w, r)
 	if err != nil {
 		http.Error(w, "Unauthorized", 401)
@@ -50,7 +56,6 @@ func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-	log.Println("websokets1")
 
 	client := &Client{
 		Conn:   conn,
@@ -76,6 +81,7 @@ func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		for _, msg := range message {
+			name, err := C.ServiceU.GetNameById(msg.UserId)
 			HistoryMessage := dto.DtoMessage{
 				Type:      "message",
 				Id:        msg.Id,
@@ -83,6 +89,7 @@ func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 				RoomId:    roomIdInt,
 				CreatedAt: msg.CreatedAt,
 				Content:   msg.Content,
+				Name:      name,
 			}
 			JsonData, err := json.Marshal(HistoryMessage)
 			if err != nil {
@@ -91,31 +98,39 @@ func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 			client.Send <- JsonData
 		}
 	}
+
 	for {
 
 		_, payload, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
+		err = json.Unmarshal(payload, &msg)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 
 		MessageSave := model.Message{
-
 			UserId:    Claims.User_id,
 			RoomId:    roomIdInt,
 			CreatedAt: time.Now(),
-			Content:   string(payload),
+			Content:   msg.Text,
 		}
 		MessageId, err := C.serviceM.Save(MessageSave, Claims.User_id)
+		name, err := C.ServiceU.GetNameById(MessageSave.UserId)
+
 		if err != nil {
 			http.Error(w, "Something is wrong", 500)
 		}
 		MessageDto := dto.DtoMessage{
 			Type:      "message",
+			Name:      name,
 			Id:        MessageId,
 			UserId:    Claims.User_id,
 			RoomId:    roomIdInt,
 			CreatedAt: time.Now(),
-			Content:   string(payload),
+			Content:   msg.Text,
 		}
 
 		JsonData, err := json.Marshal(MessageDto)

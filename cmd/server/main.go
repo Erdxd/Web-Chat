@@ -56,7 +56,7 @@ func main() {
 	}))
 	MessageRepo := repositories.NewRepo(db)
 	serviceM := service.NewServiceMessage(MessageRepo)
-	handlerMain := http1.NewChatHandler(serviceM, hub, tmpl, jwtMiddleware)
+
 	UserRepo := repositories.NewUserRepo(db)
 	Hasher := hasher.NewHasher()
 	ServiceU := service.NewUserService(UserRepo, Hasher)
@@ -64,6 +64,7 @@ func main() {
 	AdminRepo := repositories.NewAdminRepo(db)
 	AdminService := service.NewAdminService(AdminRepo)
 	AdminHandler := handlers.NewAdminHandler(*AdminService, tmpl)
+	handlerMain := http1.NewChatHandler(serviceM, hub, tmpl, jwtMiddleware, *ServiceU)
 
 	http.HandleFunc("/ws", handlerMain.OpenPipe)
 

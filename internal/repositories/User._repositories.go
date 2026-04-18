@@ -52,3 +52,13 @@ func (U *UserRepo) GetUserDataForJWT(Email string) (int, bool, error) {
 	}
 	return userid, admin, nil
 }
+func (U *UserRepo) GetNameUserById(UserId int) (string, error) {
+	var name string
+	SqlStatement := (`SELECT name FROM users WHERE userid=$1`)
+	err := U.db.QueryRow(SqlStatement, UserId).Scan(&name)
+
+	if err != nil {
+		return "", err
+	}
+	return name, nil
+}

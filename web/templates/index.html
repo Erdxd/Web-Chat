@@ -1,204 +1,142 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Чат</title>
-<style>
-body {
-    font-family: sans-serif;
-    margin: 0;
-}
-.container {
-    display: flex;
-    height: 100vh;
-}
-.sidebar {
-    width: 220px;
-    border-right: 1px solid #ddd;
-    padding: 10px;
-}
-.room {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-.room:hover {
-    background: #f0f0f0;
-}
-.avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #ccc;
-}
-.chat-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-.header {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    font-weight: 600;
-}
-#chat {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-}
-.msg {
-    max-width: 65%;
-    margin: 4px 0;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 14px;
-    word-wrap: break-word;
-}
-.me {
-    align-self: flex-end;
-    background: #e3f2fd;
-    border: 1px solid #90caf9;
-}
-.other {
-    align-self: flex-start;
-    background: #f5f5f5;
-    border: 1px solid #ddd;
-}
-.input-area {
-    display: flex;
-    border-top: 1px solid #ddd;
-}
-.input-area input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    outline: none;
-}
-.input-area button {
-    padding: 10px 14px;
-    border: none;
-    cursor: pointer;
-    background: none;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Чат</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(145deg, #0f0c1e, #1a1535);
+            color: white;
+            min-height: 100vh;
+        }
+        #chat {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(20, 15, 40, 0.7);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .msg {
+            margin: 8px 0;
+            padding: 10px 16px;
+            border-radius: 20px;
+            max-width: 70%;
+            background: rgba(45, 30, 75, 0.8);
+            border: 1px solid rgba(200, 160, 255, 0.25);
+        }
+        .meta {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+        .input-area {
+            max-width: 800px;
+            margin: 20px auto;
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 14px;
+            border-radius: 40px;
+            border: none;
+            background: rgba(20, 12, 40, 0.8);
+            color: white;
+            border: 1px solid #7c4dff;
+        }
+        button {
+            padding: 14px 24px;
+            border-radius: 40px;
+            border: none;
+            background: #7c4dff;
+            color: white;
+            cursor: pointer;
+        }
+        .room-bar {
+            max-width: 800px;
+            margin: 20px auto;
+            display: flex;
+            gap: 10px;
+        }
+        .room-btn {
+            padding: 8px 20px;
+            background: rgba(124, 77, 255, 0.3);
+            border: 1px solid #7c4dff;
+            color: white;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .room-btn.active {
+            background: #7c4dff;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="sidebar">
-        <div class="room">
-            <div class="avatar"></div>
-            <span>Комната 1</span>
-        </div>
-        <div class="room">
-            <div class="avatar"></div>
-            <span>Комната 2</span>
-        </div>
-        <div class="room">
-            <div class="avatar"></div>
-            <span>Комната 3</span>
-        </div>
-    </div>
-    <div class="chat-area">
-        <div class="header">
-            Чат: <span id="currentRoom">1</span>
-        </div>
-        <div id="chat"></div>
-        <div class="input-area">
-            <input type="text" id="messageInput" placeholder="Сообщение..." onkeydown="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()">➤</button>
-        </div>
-    </div>
+
+<div class="room-bar">
+    <button class="room-btn active" data-room="1">Комната 1</button>
+    <button class="room-btn" data-room="2">Комната 2</button>
+    <button class="room-btn" data-room="3">Комната 3</button>
 </div>
+
+<div id="chat"></div>
+
+<div class="input-area">
+    <input type="text" id="input" placeholder="Сообщение..." onkeydown="if(event.key==='Enter') send()">
+    <button onclick="send()">Отправить</button>
+</div>
+
 <script>
-const chat = document.getElementById('chat');
-const input = document.getElementById('messageInput');
-const currentRoomSpan = document.getElementById('currentRoom');
+    let socket;
+    let currentRoom = 1;
+    const chat = document.getElementById('chat');
+    const input = document.getElementById('input');
 
-let currentRoom = 1;
-let myUserId = null;
-let socket;
+    function connect(room) {
+        if (socket) socket.close();
+        socket = new WebSocket(`ws://${location.host}/ws?room=${room}`);
 
-// Функция для получения своего userId из куки (JWT)
-function getMyUserId() {
-    const cookies = document.cookie.split('; ');
-    const tokenCookie = cookies.find(c => c.startsWith('token='));
-    if (!tokenCookie) return null;
-    const token = tokenCookie.split('=')[1];
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.User_id;
-    } catch (e) {
-        return null;
+        socket.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            if (data.type === 'message') {
+                const div = document.createElement('div');
+                div.className = 'msg';
+                
+                const name = data.name || `User ${data.userid}`;
+                const time = new Date(data.createdAt).toLocaleTimeString().slice(0,5);
+                
+                div.innerHTML = `
+                    <div class="meta">${name} · ${time}</div>
+                    <div>${data.content}</div>
+                `;
+                chat.appendChild(div);
+                chat.scrollTop = chat.scrollHeight;
+            }
+        };
     }
-}
 
-function connectToRoom(room) {
-    if (socket) {
-        socket.close();
+    function send() {
+        const text = input.value.trim();
+        if (!text || !socket) return;
+        socket.send(JSON.stringify({ text }));
+        input.value = '';
     }
-    
-    socket = new WebSocket(`ws://localhost:8080/ws?room=${room}`);
-    
-    socket.onopen = () => {
-        console.log('WebSocket connected to room', room);
-        myUserId = getMyUserId();
-    };
-    
-    socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        
-        if (data.type === 'message') {
-            const msgDiv = document.createElement('div');
-            // Сравниваем userId из сообщения с моим userId
-            msgDiv.className = data.userId === myUserId ? 'msg me' : 'msg other';
-            msgDiv.innerText = data.content;
-            msgDiv.dataset.messageId = data.id;
-            chat.appendChild(msgDiv);
-            chat.scrollTop = chat.scrollHeight;
-        } else if (data.type === 'delete') {
-            const msgElement = document.querySelector(`[data-message-id="${data.id}"]`);
-            if (msgElement) msgElement.remove();
-        }
-    };
-    
-    socket.onerror = (err) => console.error('WebSocket error:', err);
-    socket.onclose = () => console.log('WebSocket closed');
-}
 
-function selectRoom(room) {
-    currentRoom = room;
-    currentRoomSpan.innerText = room;
-    chat.innerHTML = '';
-    connectToRoom(room);
-}
+    document.querySelectorAll('.room-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentRoom = +btn.dataset.room;
+            chat.innerHTML = '';
+            connect(currentRoom);
+        };
+    });
 
-function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
-        console.error('Socket not connected');
-        return;
-    }
-    socket.send(JSON.stringify({ text: text }));
-    input.value = '';
-}
-
-// Привязываем клики к комнатам
-document.querySelectorAll('.room').forEach((el, index) => {
-    el.onclick = () => selectRoom(index + 1);
-});
-
-// Получаем свой userId при загрузкеф
-myUserId = getMyUserId();
-console.log('My userId:', myUserId);
-
-// Подключаемся к комнате 1
-connectToRoom(1);
+    connect(1);
 </script>
 </body>
 </html>
