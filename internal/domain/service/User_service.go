@@ -47,3 +47,6 @@ func (US *UserService) Login(Email string, PasswordFromUser string) error {
 func (US *UserService) GetNameById(UserId int) (string, error) {
 	return US.User.GetNameUserById(UserId)
 }
+func (US *UserService) GetUserId(usertag string) (int, error) {
+	return US.User.GetUserId(usertag)
+}
