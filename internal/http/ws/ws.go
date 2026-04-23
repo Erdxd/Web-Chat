@@ -188,3 +188,13 @@ func (C *ChatHandler) DeleteMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+func (C *ChatHandler) FindUserByUserTag(w http.ResponseWriter, r *http.Request) {
+	UserTag := r.FormValue("usertag")
+	User, err := C.ServiceU.FindUserByUserTag(UserTag)
+	if err != nil {
+		http.Error(w, "Something is wrong", 500)
+		return
+	}
+	C.templates.ExecuteTemplate(w, "serchuser.html", User)
+
+}

@@ -26,3 +26,13 @@ type Claims struct {
 
 	jwt.RegisteredClaims
 }
+type UserView struct {
+	Email   string
+	Name    string
+	Ca      time.Time
+	Usertag string
+}
+type UserSerchResult struct {
+	Name   string
+	UserId int
+}

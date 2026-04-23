@@ -50,3 +50,25 @@ func (US *UserService) GetNameById(UserId int) (string, error) {
 func (US *UserService) GetUserId(usertag string) (int, error) {
 	return US.User.GetUserId(usertag)
 }
+func (US *UserService) GetDataAboutUserForProfile(UserId int) (model.UserView, error) {
+	return US.User.GetDataAboutUserForProfile(UserId)
+}
+func (US *UserService) RedactUserTag(NewUserTag string, UserId int) error {
+	return US.User.RedactUserTag(NewUserTag, UserId)
+}
+func (US *UserService) RedactPassword(NewPassword, RepeatPassword string, UserId int) error {
+	if RepeatPassword != NewPassword {
+		return errors.New("Different Passwords")
+	}
+	NewHashPassword, err := US.Hash.Hash(NewPassword)
+	if err != nil {
+		return errors.New("Something is wrong")
+	}
+	return US.User.RedactPassword(string(NewHashPassword), UserId)
+}
+func (US *UserService) RedactName(NewName string, UserId int) error {
+	return US.User.RedactName(NewName, UserId)
+}
+func (US *UserService) FindUserByUserTag(Usertag string) (model.UserSerchResult, error) {
+	return US.User.FindUserByUserTag(Usertag)
+}

@@ -6,6 +6,7 @@ import (
 	"Web-Chat/internal/repositories/entities"
 	"database/sql"
 	"log"
+	"time"
 )
 
 type UserRepo struct {
@@ -30,6 +31,7 @@ func (U *UserRepo) CreateAcc(Data model.User) error {
 	}
 	return nil
 }
+
 func (U *UserRepo) Login(Email string) (string, error) {
 	var Password string
 	SqlStatement := (`SELECT password FROM users WHERE email=$1`)
@@ -70,4 +72,50 @@ func (U *UserRepo) GetUserId(usertag string) (int, error) {
 		return 0, err
 	}
 	return userid, nil
+}
+func (U *UserRepo) GetDataAboutUserForProfile(UserId int) (model.UserView, error) {
+	var email string
+	var name string
+	var ca time.Time
+	var usertag string
+	SqlStatemnt := (`SELECT email,name,ca,usertag FROM users WHERE userid=$1`)
+	err := U.db.QueryRow(SqlStatemnt, UserId).Scan(&email, &name, &ca, &usertag)
+	if err != nil {
+		return model.UserView{}, err
+	}
+	return model.UserView{Email: email, Name: name, Ca: ca, Usertag: usertag}, nil
+
+}
+func (U *UserRepo) RedactUserTag(NewUserTag string, UserId int) error {
+	SqlStatement := (`UPDATE users SET usertag =$1 WHERE userid=$2`)
+	_, err := U.db.Exec(SqlStatement, NewUserTag, UserId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (U *UserRepo) RedactPassword(NewPassword string, UserId int) error {
+	SqlStatement := (`UPDATE users SET password =$1 WHERE userid=$2`)
+	_, err := U.db.Exec(SqlStatement, NewPassword, UserId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (U *UserRepo) RedactName(NewName string, UserId int) error {
+	SqlStatement := (`UPDATE users SET name =$1 WHERE userid=$2`)
+	_, err := U.db.Exec(SqlStatement, NewName, UserId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (U *UserRepo) FindUserByUserTag(UserTag string) (model.UserSerchResult, error) {
+	var UserSearchResult model.UserSerchResult
+	SqlStatemnt := (`SELECT name,userid FROM users WHERE usertag = $1`)
+	err := U.db.QueryRow(SqlStatemnt, UserTag).Scan(&UserSearchResult.Name, &UserSearchResult.UserId)
+	if err != nil {
+		return model.UserSerchResult{}, err
+	}
+	return UserSearchResult, nil
 }
