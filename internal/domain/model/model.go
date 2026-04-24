@@ -20,6 +20,12 @@ type User struct {
 	Email     string
 	CreatedAt time.Time
 }
+type Room struct {
+	Id        int
+	User1_Id  int
+	User2_Id  int
+	CreatedAt time.Time
+}
 type Claims struct {
 	User_id int
 	Admin   bool
