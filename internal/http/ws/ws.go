@@ -29,14 +29,15 @@ type ChatHandler struct {
 	Hub           *Hub
 	templates     *template.Template
 	JwtMiddleware *middleware.JwtM
+	serviceR      service.RoomService
 }
 
 var msg struct {
 	Text string `json:"text"`
 }
 
-func NewChatHandler(s *service.ServiceMessage, h *Hub, templates *template.Template, JwtMiddleware *middleware.JwtM, UserService service.UserService) *ChatHandler {
-	return &ChatHandler{serviceM: *s, Hub: h, templates: templates, JwtMiddleware: JwtMiddleware, ServiceU: UserService}
+func NewChatHandler(s *service.ServiceMessage, h *Hub, templates *template.Template, JwtMiddleware *middleware.JwtM, UserService service.UserService, serviceR service.RoomService) *ChatHandler {
+	return &ChatHandler{serviceM: *s, Hub: h, templates: templates, JwtMiddleware: JwtMiddleware, ServiceU: UserService, serviceR: serviceR}
 }
 func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 	roomId := r.URL.Query().Get("room")
@@ -197,4 +198,22 @@ func (C *ChatHandler) FindUserByUserTag(w http.ResponseWriter, r *http.Request) 
 	}
 	C.templates.ExecuteTemplate(w, "searchuser.html", User)
 
+}
+func (C *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) {
+	Claims, err := C.JwtMiddleware.GetDataFromJwt(w, r)
+	if err != nil {
+		http.Error(w, "UnAuthorized", 401)
+		return
+	}
+	otherID, err := strconv.Atoi(r.URL.Query().Get("user_id"))
+	if err != nil {
+		http.Error(w, "Something is wrong", 500)
+		return
+	}
+	RoomId, err := C.serviceR.CreateNewChat(Claims.User_id, otherID, time.Now())
+	if err != nil {
+		http.Error(w, "Something is wrong2", 500)
+		return
+	}
+	http.Redirect(w, r, "/?room"+strconv.Itoa(RoomId), http.StatusSeeOther)
 }

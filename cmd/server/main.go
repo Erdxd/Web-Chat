@@ -63,8 +63,10 @@ func main() {
 	HandlerUser := handlers.NewAuth(*ServiceU, tmpl, jwtMiddleware, jwtService2)
 	AdminRepo := repositories.NewAdminRepo(db)
 	AdminService := service.NewAdminService(AdminRepo)
+	RoomRepo := repositories.NewRoomRepo(db)
+	RoomService := service.NewRoomService(RoomRepo)
 	AdminHandler := handlers.NewAdminHandler(*AdminService, tmpl)
-	handlerMain := http1.NewChatHandler(serviceM, hub, tmpl, jwtMiddleware, *ServiceU)
+	handlerMain := http1.NewChatHandler(serviceM, hub, tmpl, jwtMiddleware, *ServiceU, *RoomService)
 	ProfileHandler := handlers.NewProfileH(ServiceU, tmpl, jwtMiddleware)
 
 	http.HandleFunc("/ws", handlerMain.OpenPipe)
@@ -80,6 +82,7 @@ func main() {
 	http.HandleFunc("/profile/redact/name", ProfileHandler.RedactName)
 	http.HandleFunc("/profile/redact/password", ProfileHandler.RedactPassword)
 	http.HandleFunc("/users/search", handlerMain.FindUserByUserTag)
+	http.HandleFunc("/chats/private", handlerMain.CreatePrivateChat)
 
 	http.ListenAndServe(":8080", nil)
 	log.Println("localhost:8080")
