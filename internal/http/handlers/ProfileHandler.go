@@ -3,6 +3,7 @@ package handlers
 import (
 	"Web-Chat/internal/domain/service"
 	"Web-Chat/internal/http/middleware"
+	"log"
 	"net/http"
 	"text/template"
 )
@@ -13,31 +14,39 @@ type ProfileH struct {
 	AuthJwt   *middleware.JwtM
 }
 
-func NewMainPage(UserService *service.UserService, templates *template.Template, AuthJwt *middleware.JwtM) *ProfileH {
+func NewProfileH(UserService *service.UserService, templates *template.Template, AuthJwt *middleware.JwtM) *ProfileH {
 	return &ProfileH{User: UserService, templates: templates, AuthJwt: AuthJwt}
 }
 func (PH *ProfileH) Profile(w http.ResponseWriter, r *http.Request) {
 	Claims, err := PH.AuthJwt.GetDataFromJwt(w, r)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, "Unauthorized", 401)
 		return
 	}
 	Data, err := PH.User.GetDataAboutUserForProfile(Claims.User_id)
+	log.Println(Data)
 	if err != nil {
+		log.Println(err)
+
 		http.Error(w, "Unauthorized", 401)
 		return
 	}
-	PH.templates.ExecuteTemplate(w, "Profile.html", Data)
+	PH.templates.ExecuteTemplate(w, "profile.html", Data)
 }
 func (PH *ProfileH) RedactUserTag(w http.ResponseWriter, r *http.Request) {
 	CLaims, err := PH.AuthJwt.GetDataFromJwt(w, r)
 	if err != nil {
+		log.Println(err)
+
 		http.Error(w, "Unauthorized", 401)
 		return
 	}
 	Usertag := r.FormValue("usertag")
 	err = PH.User.RedactUserTag(Usertag, CLaims.User_id)
 	if err != nil {
+		log.Println(err)
+
 		http.Error(w, "Something is wrong", 500)
 		return
 	}
@@ -46,6 +55,8 @@ func (PH *ProfileH) RedactUserTag(w http.ResponseWriter, r *http.Request) {
 func (PH *ProfileH) RedactPassword(w http.ResponseWriter, r *http.Request) {
 	CLaims, err := PH.AuthJwt.GetDataFromJwt(w, r)
 	if err != nil {
+		log.Println(err)
+
 		http.Error(w, "Unauthorized", 401)
 		return
 	}
@@ -53,6 +64,8 @@ func (PH *ProfileH) RedactPassword(w http.ResponseWriter, r *http.Request) {
 	RepeatPassword := r.FormValue("repeatpassword")
 	err = PH.User.RedactPassword(NewPassword, RepeatPassword, CLaims.User_id)
 	if err != nil {
+		log.Println(err)
+
 		http.Error(w, "Something is wrong", 500)
 		return
 	}

@@ -7,10 +7,78 @@
         body {
             font-family: sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background: linear-gradient(145deg, #0f0c1e, #1a1535);
             color: white;
             min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            width: 260px;
+            background: rgba(12, 8, 28, 0.6);
+            border-right: 1px solid rgba(124, 77, 255, 0.2);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .sidebar h3 {
+            color: #cbb5ff;
+            font-weight: 500;
+            margin: 0 0 10px;
+        }
+        .room-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: rgba(124, 77, 255, 0.2);
+            border: 1px solid rgba(124, 77, 255, 0.3);
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s;
+        }
+        .room-btn:hover, .room-btn.active {
+            background: #7c4dff;
+        }
+        .search-form {
+            display: flex;
+            gap: 6px;
+            margin: 10px 0;
+        }
+        .search-form input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(124, 77, 255, 0.3);
+            background: rgba(20, 12, 40, 0.7);
+            color: white;
+        }
+        .search-form button {
+            padding: 10px 14px;
+            background: #7c4dff;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+        }
+        .sidebar-link {
+            display: block;
+            padding: 12px;
+            color: #b9a6e0;
+            text-decoration: none;
+            border-radius: 12px;
+            border: 1px solid rgba(124, 77, 255, 0.2);
+            text-align: center;
+            margin-top: auto;
+        }
+        .sidebar-link:hover {
+            background: rgba(124, 77, 255, 0.15);
+        }
+        .main-area {
+            flex: 1;
+            padding: 20px;
         }
         #chat {
             max-width: 800px;
@@ -19,6 +87,7 @@
             border-radius: 20px;
             padding: 20px;
             backdrop-filter: blur(10px);
+            min-height: 400px;
         }
         .msg {
             margin: 8px 0;
@@ -39,7 +108,7 @@
             display: flex;
             gap: 10px;
         }
-        input {
+        .input-area input {
             flex: 1;
             padding: 14px;
             border-radius: 40px;
@@ -48,7 +117,7 @@
             color: white;
             border: 1px solid #7c4dff;
         }
-        button {
+        .input-area button {
             padding: 14px 24px;
             border-radius: 40px;
             border: none;
@@ -56,38 +125,34 @@
             color: white;
             cursor: pointer;
         }
-        .room-bar {
-            max-width: 800px;
-            margin: 20px auto;
-            display: flex;
-            gap: 10px;
-        }
-        .room-btn {
-            padding: 8px 20px;
-            background: rgba(124, 77, 255, 0.3);
-            border: 1px solid #7c4dff;
-            color: white;
-            border-radius: 40px;
-            cursor: pointer;
-        }
-        .room-btn.active {
-            background: #7c4dff;
-        }
     </style>
 </head>
 <body>
 
-<div class="room-bar">
-    <button class="room-btn active" data-room="1">Комната 1</button>
-    <button class="room-btn" data-room="2">Комната 2</button>
-    <button class="room-btn" data-room="3">Комната 3</button>
+<!-- САЙДБАР -->
+<div class="sidebar">
+    <h3>🏠 Комнаты</h3>
+    <button class="room-btn active" data-room="1">💬 Комната 1</button>
+    <button class="room-btn" data-room="2">💬 Комната 2</button>
+    <button class="room-btn" data-room="3">💬 Комната 3</button>
+    
+    <h3 style="margin-top:20px;">🔍 Поиск</h3>
+    <form class="search-form" action="/users/search" method="GET">
+        <input type="text" name="usertag" placeholder="@usertag..." />
+        <button type="submit">🔍</button>
+    </form>
+    
+    <a href="/profile" class="sidebar-link">👤 Профиль</a>
+    <a href="/auth/login" class="sidebar-link" onclick="logout()">🚪 Выйти</a>
 </div>
 
-<div id="chat"></div>
-
-<div class="input-area">
-    <input type="text" id="input" placeholder="Сообщение..." onkeydown="if(event.key==='Enter') send()">
-    <button onclick="send()">Отправить</button>
+<!-- ОСНОВНАЯ ЧАСТЬ -->
+<div class="main-area">
+    <div id="chat"></div>
+    <div class="input-area">
+        <input type="text" id="input" placeholder="Сообщение..." onkeydown="if(event.key==='Enter') send()">
+        <button onclick="send()">➤</button>
+    </div>
 </div>
 
 <script>
@@ -105,14 +170,9 @@
             if (data.type === 'message') {
                 const div = document.createElement('div');
                 div.className = 'msg';
-                
                 const name = data.name || `User ${data.userid}`;
                 const time = new Date(data.createdAt).toLocaleTimeString().slice(0,5);
-                
-                div.innerHTML = `
-                    <div class="meta">${name} · ${time}</div>
-                    <div>${data.content}</div>
-                `;
+                div.innerHTML = `<div class="meta">${name} · ${time}</div><div>${data.content}</div>`;
                 chat.appendChild(div);
                 chat.scrollTop = chat.scrollHeight;
             }
@@ -124,6 +184,10 @@
         if (!text || !socket) return;
         socket.send(JSON.stringify({ text }));
         input.value = '';
+    }
+
+    function logout() {
+        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
     }
 
     document.querySelectorAll('.room-btn').forEach(btn => {

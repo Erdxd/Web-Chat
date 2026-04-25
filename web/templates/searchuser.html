@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(145deg, #0f0c1e, #1a1535);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .search-result {
+            background: rgba(20, 15, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            width: 400px;
+            text-align: center;
+            border: 1px solid rgba(160, 120, 255, 0.2);
+        }
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #7c4dff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+        }
+        h3 {
+            margin: 0 0 4px;
+            color: #f0eaff;
+        }
+        .usertag {
+            color: #b9a6e0;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #7c4dff;
+            color: white;
+            text-decoration: none;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+        .btn:hover {
+            background: #936eff;
+        }
+        .back-link {
+            display: block;
+            margin-top: 16px;
+            color: #b9a6e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-result">
+        <div class="avatar">{{.Name | slice 0 1}}</div>
+        <h3>{{.Name}}</h3>
+        <p class="usertag">@{{.Usertag}}</p>
+        <a href="/chats/private?user_id={{.UserId}}" class="btn">Написать</a>
+        <a href="/" class="back-link">← Назад в чат</a>
+    </div>
+</body>
+</html>

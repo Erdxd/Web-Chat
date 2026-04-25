@@ -77,13 +77,21 @@ func (U *UserRepo) GetDataAboutUserForProfile(UserId int) (model.UserView, error
 	var email string
 	var name string
 	var ca time.Time
-	var usertag string
+	var usertag sql.NullString
 	SqlStatemnt := (`SELECT email,name,ca,usertag FROM users WHERE userid=$1`)
 	err := U.db.QueryRow(SqlStatemnt, UserId).Scan(&email, &name, &ca, &usertag)
+	if err == sql.ErrNoRows {
+		return model.UserView{Email: email, Name: name, Ca: ca, Usertag: ""}, nil
+	}
 	if err != nil {
 		return model.UserView{}, err
 	}
-	return model.UserView{Email: email, Name: name, Ca: ca, Usertag: usertag}, nil
+	userTag := ""
+	if usertag.Valid {
+		userTag = usertag.String
+	}
+
+	return model.UserView{Email: email, Name: name, Ca: ca, Usertag: userTag}, nil
 
 }
 func (U *UserRepo) RedactUserTag(NewUserTag string, UserId int) error {

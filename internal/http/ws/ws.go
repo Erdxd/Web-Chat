@@ -195,6 +195,6 @@ func (C *ChatHandler) FindUserByUserTag(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Something is wrong", 500)
 		return
 	}
-	C.templates.ExecuteTemplate(w, "serchuser.html", User)
+	C.templates.ExecuteTemplate(w, "searchuser.html", User)
 
 }

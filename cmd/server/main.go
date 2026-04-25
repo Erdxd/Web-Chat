@@ -65,6 +65,7 @@ func main() {
 	AdminService := service.NewAdminService(AdminRepo)
 	AdminHandler := handlers.NewAdminHandler(*AdminService, tmpl)
 	handlerMain := http1.NewChatHandler(serviceM, hub, tmpl, jwtMiddleware, *ServiceU)
+	ProfileHandler := handlers.NewProfileH(ServiceU, tmpl, jwtMiddleware)
 
 	http.HandleFunc("/ws", handlerMain.OpenPipe)
 
@@ -74,6 +75,12 @@ func main() {
 	http.HandleFunc("/admin/CheckUsers", jwtMiddleware.VerifAdmin(AdminHandler.CheckAllUsers))
 	http.HandleFunc("/admin/FoundUser", jwtMiddleware.VerifAdmin(AdminHandler.FoundByUserId))
 	http.HandleFunc("/admin/deleteUser", jwtMiddleware.VerifAdmin(AdminHandler.DeleteUser))
+	http.HandleFunc("/profile", ProfileHandler.Profile)
+	http.HandleFunc("/profile/redact/tag", ProfileHandler.RedactUserTag)
+	http.HandleFunc("/profile/redact/name", ProfileHandler.RedactName)
+	http.HandleFunc("/profile/redact/password", ProfileHandler.RedactPassword)
+	http.HandleFunc("/users/search", handlerMain.FindUserByUserTag)
+
 	http.ListenAndServe(":8080", nil)
 	log.Println("localhost:8080")
 }
