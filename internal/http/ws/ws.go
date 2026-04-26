@@ -196,6 +196,8 @@ func (C *ChatHandler) FindUserByUserTag(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Something is wrong", 500)
 		return
 	}
+	User.UserTag = UserTag
+	log.Println(User)
 	C.templates.ExecuteTemplate(w, "searchuser.html", User)
 
 }
@@ -215,5 +217,24 @@ func (C *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Something is wrong2", 500)
 		return
 	}
-	http.Redirect(w, r, "/?room"+strconv.Itoa(RoomId), http.StatusSeeOther)
+	http.Redirect(w, r, "/?room="+strconv.Itoa(RoomId), http.StatusSeeOther)
+}
+func (C *ChatHandler) GetAllPrivateChats(w http.ResponseWriter, r *http.Request) {
+	Claims, err := C.JwtMiddleware.GetDataFromJwt(w, r)
+	if err != nil {
+		http.Error(w, "Unauthorized", 401)
+		return
+	}
+	AllPrivateChat, err := C.serviceR.GetAllPrivateChats(Claims.User_id)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Something is wrong", 500)
+		return
+	}
+	Data := struct {
+		Chats []model.PrivateChat
+	}{Chats: AllPrivateChat}
+	log.Println(Data)
+	C.templates.ExecuteTemplate(w, "index.html", Data)
+
 }

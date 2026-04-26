@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"Web-Chat/internal/domain/model"
 	"Web-Chat/internal/domain/repository"
 	"database/sql"
 	"time"
@@ -57,4 +58,20 @@ func (RR *RoomRepo) CreateRoom(UserId1, UserId2 int, ca time.Time) (int, error) 
 		return Id, err
 	}
 	return Id, nil
+}
+func (RR *RoomRepo) GetAllPrivateChats(UserId1 int) ([]model.PrivateChat, error) {
+	SqlStatement := (`SELECT id,user1_id,user2_id FROM private_chats WHERE user1_id = $1 OR user2_id = $1`)
+	rows, err := RR.db.Query(SqlStatement, UserId1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var PrivateChats []model.PrivateChat
+	for rows.Next() {
+		var PrivateChat model.PrivateChat
+		rows.Scan(&PrivateChat.ID, &PrivateChat.UserId1, &PrivateChat.UserId2)
+		PrivateChats = append(PrivateChats, PrivateChat)
+
+	}
+	return PrivateChats, nil
 }

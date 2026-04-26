@@ -2,73 +2,92 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Поиск</title>
+    <title>Поиск пользователя</title>
     <style>
-        body {
-            font-family: sans-serif;
+        * {
             margin: 0;
-            padding: 20px;
-            background: linear-gradient(145deg, #0f0c1e, #1a1535);
-            color: white;
-            min-height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+        }
+        body {
+            height: 100vh;
+            background: linear-gradient(145deg, #0f0c1e 0%, #1a1535 50%, #251c45 100%);
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
-        .search-result {
+        .card {
             background: rgba(20, 15, 40, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            width: 400px;
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px 30px;
+            width: 420px;
             text-align: center;
-            border: 1px solid rgba(160, 120, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(180, 130, 255, 0.2);
+            color: white;
         }
         .avatar {
-            width: 64px;
-            height: 64px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background: #7c4dff;
+            background: linear-gradient(135deg, #7c4dff, #b47aff);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px;
-            font-size: 28px;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            font-weight: 600;
         }
-        h3 {
-            margin: 0 0 4px;
+        h2 {
+            font-weight: 500;
             color: #f0eaff;
+            margin-bottom: 4px;
         }
-        .usertag {
+        .tag {
             color: #b9a6e0;
-            margin-bottom: 20px;
+            font-size: 15px;
+            margin-bottom: 24px;
         }
         .btn {
             display: inline-block;
-            padding: 12px 28px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 12px;
+            border: none;
+            text-align: center;
+        }
+        .btn-primary {
             background: #7c4dff;
             color: white;
-            text-decoration: none;
-            border-radius: 40px;
-            font-weight: 500;
         }
-        .btn:hover {
+        .btn-primary:hover {
             background: #936eff;
         }
-        .back-link {
-            display: block;
-            margin-top: 16px;
-            color: #b9a6e0;
+        .btn-back {
+            background: transparent;
+            border: 1px solid rgba(124, 77, 255, 0.4);
+            color: #cbb5ff;
+        }
+        .btn-back:hover {
+            background: rgba(124, 77, 255, 0.1);
         }
     </style>
 </head>
 <body>
-    <div class="search-result">
-        <div class="avatar">{{.Name | slice 0 1}}</div>
-        <h3>{{.Name}}</h3>
-        <p class="usertag">@{{.Usertag}}</p>
-        <a href="/chats/private?user_id={{.UserId}}" class="btn">Написать</a>
-        <a href="/" class="back-link">← Назад в чат</a>
+    <div class="card">
+        <div class="avatar">{{printf "%.1s" .Name}}</div>
+        <h2>{{.Name}}</h2>
+        <p class="tag">@{{.UserTag}}</p>
+        <a href="/chats/private?user_id={{.UserId}}" class="btn btn-primary">💬 Написать</a>
+        <a href="/" class="btn btn-back">← Назад в чат</a>
     </div>
 </body>
 </html>

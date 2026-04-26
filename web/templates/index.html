@@ -136,6 +136,15 @@
     <button class="room-btn" data-room="2">💬 Комната 2</button>
     <button class="room-btn" data-room="3">💬 Комната 3</button>
     
+    {{if .Chats}}
+    <h3 style="margin-top:20px;">💬 Приватные чаты</h3>
+    {{range .Chats}}
+        <button class="room-btn" data-room="{{.ID}}">
+            💬 Чат {{.ID}}
+        </button>
+    {{end}}
+    {{end}}
+    
     <h3 style="margin-top:20px;">🔍 Поиск</h3>
     <form class="search-form" action="/users/search" method="GET">
         <input type="text" name="usertag" placeholder="@usertag..." />
@@ -200,7 +209,16 @@
         };
     });
 
-    connect(1);
+    // Читаем room из URL после редиректа
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomFromUrl = urlParams.get('room');
+    if (roomFromUrl) {
+        currentRoom = +roomFromUrl;
+        document.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+        const targetBtn = document.querySelector(`[data-room="${currentRoom}"]`);
+        if (targetBtn) targetBtn.classList.add('active');
+    }
+    connect(currentRoom);
 </script>
 </body>
 </html>

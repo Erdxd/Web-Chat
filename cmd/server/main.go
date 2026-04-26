@@ -51,9 +51,7 @@ func main() {
 	jwtService2 := service.NewJwt(jwtservice)
 
 	jwtMiddleware := middleware.NewJwtM(jwtservice)
-	http.HandleFunc("/", jwtMiddleware.VerifUser(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "web/templates/index.html")
-	}))
+
 	MessageRepo := repositories.NewRepo(db)
 	serviceM := service.NewServiceMessage(MessageRepo)
 
@@ -70,7 +68,7 @@ func main() {
 	ProfileHandler := handlers.NewProfileH(ServiceU, tmpl, jwtMiddleware)
 
 	http.HandleFunc("/ws", handlerMain.OpenPipe)
-
+	http.HandleFunc("/", jwtMiddleware.VerifUser(handlerMain.GetAllPrivateChats))
 	http.HandleFunc("/auth/login", HandlerUser.Login)
 	http.HandleFunc("/auth/register", HandlerUser.CreateAcc)
 	http.HandleFunc("/ws/delete", handlerMain.DeleteMessage)

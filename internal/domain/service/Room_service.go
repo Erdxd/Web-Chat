@@ -1,6 +1,7 @@
 package service
 
 import (
+	"Web-Chat/internal/domain/model"
 	"Web-Chat/internal/domain/repository"
 	"time"
 )
@@ -23,4 +24,7 @@ func (RS *RoomService) FindRoomIdByUsersId(UserId1 int, UserId2 int) (int, error
 }
 func (RS *RoomService) FindUsersByRoomId(RoomId int) (int, int, error) {
 	return RS.RoomRepo.FindUsersByRoomId(RoomId)
+}
+func (RS *RoomService) GetAllPrivateChats(Userid1 int) ([]model.PrivateChat, error) {
+	return RS.RoomRepo.GetAllPrivateChats(Userid1)
 }

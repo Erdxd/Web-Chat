@@ -39,6 +39,12 @@ type UserView struct {
 	Usertag string
 }
 type UserSerchResult struct {
-	Name   string
-	UserId int
+	UserTag string
+	Name    string
+	UserId  int
+}
+type PrivateChat struct {
+	UserId1 int
+	UserId2 int
+	ID      int
 }
