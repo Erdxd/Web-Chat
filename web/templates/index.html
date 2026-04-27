@@ -138,11 +138,11 @@
     
     {{if .Chats}}
     <h3 style="margin-top:20px;">💬 Приватные чаты</h3>
-    {{range .Chats}}
-        <button class="room-btn" data-room="{{.ID}}">
-            💬 Чат {{.ID}}
-        </button>
-    {{end}}
+   {{range .Chats}}
+    <button class="room-btn" data-room="{{.Id}}">
+        💬 {{.Name}}
+    </button>
+{{end}}
     {{end}}
     
     <h3 style="margin-top:20px;">🔍 Поиск</h3>

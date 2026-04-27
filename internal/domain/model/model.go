@@ -48,3 +48,7 @@ type PrivateChat struct {
 	UserId2 int
 	ID      int
 }
+type ChatWithName struct {
+	Name string
+	Id   int
+}

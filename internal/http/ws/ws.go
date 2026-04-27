@@ -226,13 +226,14 @@ func (C *ChatHandler) GetAllPrivateChats(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	AllPrivateChat, err := C.serviceR.GetAllPrivateChats(Claims.User_id)
+
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Something is wrong", 500)
 		return
 	}
 	Data := struct {
-		Chats []model.PrivateChat
+		Chats []model.ChatWithName
 	}{Chats: AllPrivateChat}
 	log.Println(Data)
 	C.templates.ExecuteTemplate(w, "index.html", Data)
