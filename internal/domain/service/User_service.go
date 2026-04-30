@@ -51,6 +51,7 @@ func (US *UserService) GetUserId(usertag string) (int, error) {
 	return US.User.GetUserId(usertag)
 }
 func (US *UserService) GetDataAboutUserForProfile(UserId int) (model.UserView, error) {
+
 	return US.User.GetDataAboutUserForProfile(UserId)
 }
 func (US *UserService) RedactUserTag(NewUserTag string, UserId int) error {
@@ -71,4 +72,10 @@ func (US *UserService) RedactName(NewName string, UserId int) error {
 }
 func (US *UserService) FindUserByUserTag(Usertag string) (model.UserSerchResult, error) {
 	return US.User.FindUserByUserTag(Usertag)
+}
+func (US *UserService) LastSeen(UserId int) error {
+	return US.User.LastSeen(UserId)
+}
+func (US *UserService) IsOnline(UserId int) (bool, error) {
+	return US.User.IsOnline(UserId)
 }

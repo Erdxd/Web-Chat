@@ -52,6 +52,11 @@ func (C *ChatHandler) OpenPipe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized", 401)
 		return
 	}
+	err = C.ServiceU.LastSeen(Claims.User_id)
+	if err != nil {
+		http.Error(w, "Something is wrong", 500)
+		return
+	}
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -196,9 +201,27 @@ func (C *ChatHandler) FindUserByUserTag(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Something is wrong", 500)
 		return
 	}
+	UserId, err := C.ServiceU.GetUserId(UserTag)
+	if err != nil {
+		http.Error(w, "Something is wrong", 500)
+		return
+	}
+	Online, err := C.ServiceU.IsOnline(UserId)
+	if err != nil {
+		http.Error(w, "Something is wrong", 500)
+		log.Println(err)
+		return
+	}
 	User.UserTag = UserTag
 	log.Println(User)
-	C.templates.ExecuteTemplate(w, "searchuser.html", User)
+	Data := struct {
+		User   model.UserSerchResult
+		Online bool
+	}{
+		User:   User,
+		Online: Online,
+	}
+	C.templates.ExecuteTemplate(w, "searchuser.html", Data)
 
 }
 func (C *ChatHandler) CreatePrivateChat(w http.ResponseWriter, r *http.Request) {

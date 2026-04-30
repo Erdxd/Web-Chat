@@ -15,4 +15,6 @@ type User interface {
 	RedactPassword(NewPassword string, UserId int) error
 	RedactName(NewName string, UserId int) error
 	FindUserByUserTag(UserTag string) (model.UserSerchResult, error)
+	LastSeen(UserId int) error
+	IsOnline(UserId int) (bool, error)
 }

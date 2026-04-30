@@ -131,20 +131,16 @@
 
 <!-- САЙДБАР -->
 <div class="sidebar">
-    <h3>🏠 Комнаты</h3>
-    <button class="room-btn active" data-room="1">💬 Комната 1</button>
-    <button class="room-btn" data-room="2">💬 Комната 2</button>
-    <button class="room-btn" data-room="3">💬 Комната 3</button>
+
     
-    {{if .Chats}}
-    <h3 style="margin-top:20px;">💬 Приватные чаты</h3>
-   {{range .Chats}}
+ {{if .Chats}}
+<h3 style="margin-top:20px;">💬 Приватные чаты</h3>
+{{range .Chats}}
     <button class="room-btn" data-room="{{.Id}}">
-        💬 {{.Name}}
+        {{if .Online}}🟢{{else}}🟡{{end}} {{.Name}}
     </button>
 {{end}}
-    {{end}}
-    
+{{end}}
     <h3 style="margin-top:20px;">🔍 Поиск</h3>
     <form class="search-form" action="/users/search" method="GET">
         <input type="text" name="usertag" placeholder="@usertag..." />

@@ -30,22 +30,26 @@ func (RS *RoomService) FindUsersByRoomId(RoomId int) (int, int, error) {
 }
 func (RS *RoomService) GetAllPrivateChats(Userid1 int) ([]model.ChatWithName, error) {
 	var Name string
+	var Online bool
 	DataAboutRoom, err := RS.RoomRepo.GetAllPrivateChats(Userid1)
 	if err != nil {
-		errors.New("Something is wrong")
+
 		log.Println(err)
 	}
 	var chats []model.ChatWithName
 	for _, chat := range DataAboutRoom {
 		if chat.UserId1 == Userid1 {
 			Name, err = RS.UserRepo.GetNameUserById(chat.UserId2)
+			Online, err = RS.UserRepo.IsOnline(chat.UserId2)
 		} else {
 			Name, err = RS.UserRepo.GetNameUserById(chat.UserId1)
+			Online, err = RS.UserRepo.IsOnline(chat.UserId1)
+
 		}
 		if err != nil {
 			errors.New("Something is wrong")
 		}
-		chats = append(chats, model.ChatWithName{Name: Name, Id: chat.ID})
+		chats = append(chats, model.ChatWithName{Name: Name, Id: chat.ID, Online: Online})
 
 	}
 	return chats, err

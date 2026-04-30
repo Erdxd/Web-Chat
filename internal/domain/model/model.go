@@ -49,6 +49,7 @@ type PrivateChat struct {
 	ID      int
 }
 type ChatWithName struct {
-	Name string
-	Id   int
+	Name   string
+	Id     int
+	Online bool
 }

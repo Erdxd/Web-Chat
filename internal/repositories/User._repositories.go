@@ -127,3 +127,24 @@ func (U *UserRepo) FindUserByUserTag(UserTag string) (model.UserSerchResult, err
 	}
 	return UserSearchResult, nil
 }
+func (U *UserRepo) LastSeen(UserId int) error {
+	SqlStatemnt := ("UPDATE users SET status=NOW() WHERE userid=$1")
+	_, err := U.db.Exec(SqlStatemnt, UserId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (U *UserRepo) IsOnline(UserId int) (bool, error) {
+	var status sql.NullTime
+	SqlStatement := (`SELECT status FROM users WHERE userid = $1`)
+	err := U.db.QueryRow(SqlStatement, UserId).Scan(&status)
+	if !status.Valid {
+		return false, nil
+	}
+	log.Println(err)
+	if err != nil {
+		return false, err
+	}
+	return time.Since(status.Time) < 5*time.Minute, nil
+}

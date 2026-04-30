@@ -16,6 +16,7 @@ type User struct {
 	Password  string    `db:"password"`
 	Email     string    `db:"email"`
 	CreatedAt time.Time `db:"ca"`
+	Status    time.Time `db:"status"`
 }
 type Room struct {
 	Id        int       `json:"idroom" db:"id"`

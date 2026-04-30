@@ -48,7 +48,17 @@
         .tag {
             color: #b9a6e0;
             font-size: 15px;
-            margin-bottom: 24px;
+            margin-bottom: 4px;
+        }
+        .status {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .online {
+            color: #4ade80;
+        }
+        .offline {
+            color: #8877b9;
         }
         .btn {
             display: inline-block;
@@ -83,10 +93,11 @@
 </head>
 <body>
     <div class="card">
-        <div class="avatar">{{printf "%.1s" .Name}}</div>
-        <h2>{{.Name}}</h2>
-        <p class="tag">@{{.UserTag}}</p>
-        <a href="/chats/private?user_id={{.UserId}}" class="btn btn-primary">💬 Написать</a>
+        <div class="avatar">{{printf "%.1s" .User.Name}}</div>
+        <h2>{{.User.Name}}</h2>
+        <p class="tag">@{{.User.UserTag}}</p>
+        <p class="status">{{if .Online}}<span class="online">🟢 Онлайн</span>{{else}}<span class="offline">🟡 Оффлайн</span>{{end}}</p>
+        <a href="/chats/private?user_id={{.User.UserId}}" class="btn btn-primary">💬 Написать</a>
         <a href="/" class="btn btn-back">← Назад в чат</a>
     </div>
 </body>
