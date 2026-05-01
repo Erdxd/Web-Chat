@@ -206,7 +206,7 @@ func (C *ChatHandler) FindUserByUserTag(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Something is wrong", 500)
 		return
 	}
-	Online, err := C.ServiceU.IsOnline(UserId)
+	Online, err := C.ServiceU.HowOnline(UserId)
 	if err != nil {
 		http.Error(w, "Something is wrong", 500)
 		log.Println(err)
@@ -216,7 +216,7 @@ func (C *ChatHandler) FindUserByUserTag(w http.ResponseWriter, r *http.Request) 
 	log.Println(User)
 	Data := struct {
 		User   model.UserSerchResult
-		Online bool
+		Online string
 	}{
 		User:   User,
 		Online: Online,

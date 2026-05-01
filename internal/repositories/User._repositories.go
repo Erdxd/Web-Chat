@@ -135,16 +135,17 @@ func (U *UserRepo) LastSeen(UserId int) error {
 	}
 	return nil
 }
-func (U *UserRepo) IsOnline(UserId int) (bool, error) {
+func (U *UserRepo) HowOnline(UserId int) (time.Time, error) {
 	var status sql.NullTime
 	SqlStatement := (`SELECT status FROM users WHERE userid = $1`)
 	err := U.db.QueryRow(SqlStatement, UserId).Scan(&status)
 	if !status.Valid {
-		return false, nil
+		return status.Time, nil
+	} else {
+		if err != nil {
+			return status.Time, err
+		}
+		return status.Time, nil
 	}
-	log.Println(err)
-	if err != nil {
-		return false, err
-	}
-	return time.Since(status.Time) < 5*time.Minute, nil
+
 }

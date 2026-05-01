@@ -96,7 +96,13 @@
         <div class="avatar">{{printf "%.1s" .User.Name}}</div>
         <h2>{{.User.Name}}</h2>
         <p class="tag">@{{.User.UserTag}}</p>
-        <p class="status">{{if .Online}}<span class="online">🟢 Онлайн</span>{{else}}<span class="offline">🟡 Оффлайн</span>{{end}}</p>
+        <p class="status">
+            {{if eq .Online "🟢 ONLINE"}}
+                <span class="online">{{.Online}}</span>
+            {{else}}
+                <span class="offline">{{.Online}}</span>
+            {{end}}
+        </p>
         <a href="/chats/private?user_id={{.User.UserId}}" class="btn btn-primary">💬 Написать</a>
         <a href="/" class="btn btn-back">← Назад в чат</a>
     </div>

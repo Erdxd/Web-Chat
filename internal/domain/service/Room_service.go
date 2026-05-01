@@ -8,13 +8,17 @@ import (
 	"time"
 )
 
+type OnlineStatusProvider interface {
+	HowOnline(UserId int) (string, error)
+}
 type RoomService struct {
-	RoomRepo repository.Room
-	UserRepo repository.User
+	RoomRepo       repository.Room
+	UserRepo       repository.User
+	StatusProvider OnlineStatusProvider
 }
 
-func NewRoomService(RoomRepo repository.Room, UserRepo repository.User) *RoomService {
-	return &RoomService{RoomRepo: RoomRepo, UserRepo: UserRepo}
+func NewRoomService(RoomRepo repository.Room, UserRepo repository.User, StatusProvider OnlineStatusProvider) *RoomService {
+	return &RoomService{RoomRepo: RoomRepo, UserRepo: UserRepo, StatusProvider: StatusProvider}
 }
 func (RS *RoomService) CreateNewChat(UserId1, UserId2 int, ca time.Time) (int, error) {
 	return RS.RoomRepo.CreateRoom(UserId1, UserId2, ca)
@@ -30,7 +34,7 @@ func (RS *RoomService) FindUsersByRoomId(RoomId int) (int, int, error) {
 }
 func (RS *RoomService) GetAllPrivateChats(Userid1 int) ([]model.ChatWithName, error) {
 	var Name string
-	var Online bool
+	var Online string
 	DataAboutRoom, err := RS.RoomRepo.GetAllPrivateChats(Userid1)
 	if err != nil {
 
@@ -40,14 +44,14 @@ func (RS *RoomService) GetAllPrivateChats(Userid1 int) ([]model.ChatWithName, er
 	for _, chat := range DataAboutRoom {
 		if chat.UserId1 == Userid1 {
 			Name, err = RS.UserRepo.GetNameUserById(chat.UserId2)
-			Online, err = RS.UserRepo.IsOnline(chat.UserId2)
+			Online, err = RS.StatusProvider.HowOnline(chat.UserId2)
 		} else {
 			Name, err = RS.UserRepo.GetNameUserById(chat.UserId1)
-			Online, err = RS.UserRepo.IsOnline(chat.UserId1)
+			Online, err = RS.StatusProvider.HowOnline(chat.UserId1)
 
 		}
 		if err != nil {
-			errors.New("Something is wrong")
+			return nil, errors.New("Something is wrong")
 		}
 		chats = append(chats, model.ChatWithName{Name: Name, Id: chat.ID, Online: Online})
 

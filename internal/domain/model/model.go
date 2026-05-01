@@ -51,5 +51,5 @@ type PrivateChat struct {
 type ChatWithName struct {
 	Name   string
 	Id     int
-	Online bool
+	Online string
 }

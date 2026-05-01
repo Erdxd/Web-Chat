@@ -133,11 +133,11 @@
 <div class="sidebar">
 
     
- {{if .Chats}}
+{{if .Chats}}
 <h3 style="margin-top:20px;">💬 Приватные чаты</h3>
 {{range .Chats}}
     <button class="room-btn" data-room="{{.Id}}">
-        {{if .Online}}🟢{{else}}🟡{{end}} {{.Name}}
+        {{.Name}} · <span style="font-size:12px; opacity:0.8;">{{.Online}}</span>
     </button>
 {{end}}
 {{end}}

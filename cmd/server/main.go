@@ -62,7 +62,7 @@ func main() {
 	AdminRepo := repositories.NewAdminRepo(db)
 	AdminService := service.NewAdminService(AdminRepo)
 	RoomRepo := repositories.NewRoomRepo(db)
-	RoomService := service.NewRoomService(RoomRepo, UserRepo)
+	RoomService := service.NewRoomService(RoomRepo, UserRepo, ServiceU)
 	AdminHandler := handlers.NewAdminHandler(*AdminService, tmpl)
 	handlerMain := http1.NewChatHandler(serviceM, hub, tmpl, jwtMiddleware, *ServiceU, *RoomService)
 	ProfileHandler := handlers.NewProfileH(ServiceU, tmpl, jwtMiddleware)

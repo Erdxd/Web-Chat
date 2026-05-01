@@ -2,6 +2,7 @@ package repository
 
 import (
 	"Web-Chat/internal/domain/model"
+	"time"
 )
 
 type User interface {
@@ -16,5 +17,5 @@ type User interface {
 	RedactName(NewName string, UserId int) error
 	FindUserByUserTag(UserTag string) (model.UserSerchResult, error)
 	LastSeen(UserId int) error
-	IsOnline(UserId int) (bool, error)
+	HowOnline(UserId int) (time.Time, error)
 }

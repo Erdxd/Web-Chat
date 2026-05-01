@@ -5,6 +5,8 @@ import (
 	"Web-Chat/internal/domain/repository"
 	"Web-Chat/internal/domain/repository/auth"
 	"errors"
+	"fmt"
+	"time"
 )
 
 type UserService struct {
@@ -76,6 +78,28 @@ func (US *UserService) FindUserByUserTag(Usertag string) (model.UserSerchResult,
 func (US *UserService) LastSeen(UserId int) error {
 	return US.User.LastSeen(UserId)
 }
-func (US *UserService) IsOnline(UserId int) (bool, error) {
-	return US.User.IsOnline(UserId)
+func (US *UserService) HowOnline(UserId int) (string, error) {
+	Time, err := US.User.HowOnline(UserId)
+	if err != nil {
+		return "", err
+	}
+	if Time.IsZero() {
+		return "🔴 OFFLINE", nil
+	}
+
+	diff := time.Since(Time)
+	if diff > 60*time.Minute && diff < 24*time.Hour {
+		Hours := int(diff.Hours())
+		return fmt.Sprintf("WAS ONLINE %d HOURS AGO", Hours), nil
+	} else if diff > 24*time.Hour {
+		return fmt.Sprintf("LAST SEEN %s", Time.Format("02.01.2006")), nil
+	} else if diff < 60*time.Minute && diff > 1*time.Minute {
+		Minute := int(diff.Minutes())
+		return fmt.Sprintf("WAS ONLINE %d MINUTES AGO", Minute), nil
+	} else if diff < time.Minute {
+		return "🟢 ONLINE", nil
+	} else {
+		return fmt.Sprintf("LAST SEEN %s", Time.Format("02.01.2006")), nil
+	}
+
 }
