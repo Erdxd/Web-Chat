@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres?sslmode=disable
+      - JWT_TOKEN=lQq1gFbzt0nbaso9uXuEubS4ceJT4rqRt9QXALzr6eE=
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "0.0.0.0:8080:8080"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d 
+
+volumes:
+  pgdata:

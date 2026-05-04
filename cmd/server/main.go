@@ -5,6 +5,7 @@ import (
 	"Web-Chat/internal/http/handlers"
 	"Web-Chat/internal/http/middleware"
 	http1 "Web-Chat/internal/http/ws"
+	"time"
 
 	hasher "Web-Chat/internal/infrastructure/Hasher"
 	jwt "Web-Chat/internal/infrastructure/Jwt"
@@ -26,7 +27,7 @@ func main() {
 		panic(err)
 	}
 
-	err = godotenv.Load(".env")
+	_ = godotenv.Load(".env")
 	if err != nil {
 		log.Println(err)
 	}
@@ -34,11 +35,16 @@ func main() {
 	if UrlDb == "" {
 		panic("App was started without Database_URL")
 	}
+
 	db, err := infrastructure.InitDb(UrlDb)
+
 	if err != nil {
 		log.Println(err)
 	}
-
+	if db == nil {
+		log.Fatal("DB")
+	}
+	time.Sleep(2 * time.Second)
 	hub := http1.NewHub()
 	go hub.Run()
 
